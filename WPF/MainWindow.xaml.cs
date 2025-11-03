@@ -118,7 +118,7 @@ namespace WPF
             string filename = "";
             try
             {
-                filename = "C:\\Users\\zachs\\source\\repos\\NumberRecognizer\\Numbers\\CurrentNumber.png";
+                filename = "C:\\Users\\zachs\\RiderProjects\\NumberRecognizer\\Numbers\\CurrentNumber.png";
             }
             catch (System.Exception ex)
             {
