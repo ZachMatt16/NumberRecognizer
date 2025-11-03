@@ -7,19 +7,22 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="418*"/>
+            <ColumnDefinition Width="383*"/>
+        </Grid.ColumnDefinitions>
         <Canvas x:Name="Canvas" Background="White" Margin="0,0,97,0" Cursor="Arrow" MouseDown="Canvas_MouseDown"
-                MouseUp="Canvas_MouseUp" MouseMove="Canvas_MouseMove" />
-        <TextBox x:Name="Radius" HorizontalAlignment="Left" Margin="708,72,0,0" TextWrapping="Wrap"
-                 VerticalAlignment="Top" Width="95" Height="68" FontSize="25" />
-        <TextBlock HorizontalAlignment="Left" Margin="708,0,0,0" TextWrapping="Wrap" VerticalAlignment="Top"
-                   FontSize="25" Width="90" Height="60">
-            <Run Text="Brush" /><LineBreak /><Run Text="Size:" />
-        </TextBlock>
-        <Button x:Name="Save_File_Button" Content="Save File" HorizontalAlignment="Left" Margin="703,291,0,0"
-                VerticalAlignment="Top" Height="49" Width="95" Click="Button_Click" FontSize="20" />
-        <TextBox x:Name="Save_File" HorizontalAlignment="Left" Margin="708,217,0,0" TextWrapping="Wrap"
-                 VerticalAlignment="Top" Width="90" Height="52" FontSize="20" BorderThickness="1,1,1,1" />
-        <TextBlock HorizontalAlignment="Left" Margin="710,140,0,0" TextWrapping="Wrap" VerticalAlignment="Top"
-                   FontSize="25" Width="90" Height="60" Text="File Name:" />
+                MouseUp="Canvas_MouseUp" MouseMove="Canvas_MouseMove" Grid.ColumnSpan="2" />
+        <TextBlock HorizontalAlignment="Left" Margin="290,0,0,0" TextWrapping="Wrap" VerticalAlignment="Top"
+                   FontSize="15" Width="90" Height="23" Grid.Column="1" Text="Brush Size:"/>
+        <Button x:Name="Save_File_Button" Content="Save File" HorizontalAlignment="Left" Margin="291,134,0,0"
+                VerticalAlignment="Top" Height="43" Width="90" Click="Button_Click" FontSize="20" Grid.Column="1" />
+        <TextBox x:Name="Save_File" HorizontalAlignment="Left" Margin="291,101,0,0" TextWrapping="Wrap"
+                 VerticalAlignment="Top" Width="90" Height="28" FontSize="20" BorderThickness="1,1,1,1" Grid.Column="1" />
+        <TextBlock HorizontalAlignment="Left" Margin="293,76,0,0" TextWrapping="Wrap" VerticalAlignment="Top"
+                   FontSize="15" Width="90" Height="22" Text="File Name:" Grid.Column="1" />
+
+        <Slider x:Name="slider" Minimum="0" Maximum="50" Value="25" TickFrequency="1" IsSnapToTickEnabled="True" Margin="295,51,0,0" Grid.Column="1" VerticalAlignment="Top" HorizontalAlignment="Left" Height="20" Width="79"/>
+        <TextBox x:Name="Radius" Text="{Binding Value, ElementName=slider, Mode=TwoWay}" Width="50" Margin="310,28,0,0" Grid.Column="1" VerticalAlignment="Top" HorizontalAlignment="Left" RenderTransformOrigin="0.526,0.815"/>
     </Grid>
 </Window>
