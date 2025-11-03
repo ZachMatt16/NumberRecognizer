@@ -21,10 +21,10 @@ namespace NumberRecognizer
         {
             try
             {
-                using Image<Rgba32> image = Image.Load<Rgba32>(filename);
+                using var image = SixLabors.ImageSharp.Image.Load<Rgba32>(filename);
                 // capture image dimensions
-                int width = image.Width;
-                int height = image.Height;
+                var width = image.Width;
+                var height = image.Height;
 
                 // create a pixel span to hold the pixel data
                 Span<Rgba32> pixelSpan = new Rgba32[width * height];
