@@ -22,17 +22,17 @@ namespace WPF
         /// <summary>
         /// Field to track if drawing is in progress
         /// </summary>
-        private bool isDrawing = false;
+        private bool _isDrawing = false;
 
         /// <summary>
         /// Field to track if erasing is in progress
         /// </summary>
-        private bool isErasing = false;
+        private bool _isErasing = false;
 
         /// <summary>
         /// Field to store the previous point for drawing lines
         /// </summary>
-        private Point previousPoint;
+        private Point _previousPoint;
 
         public MainWindow()
         {
@@ -48,14 +48,14 @@ namespace WPF
         {
             if (e.LeftButton == MouseButtonState.Pressed)
             {
-                isDrawing = true;
-                previousPoint = e.GetPosition(Canvas);
+                _isDrawing = true;
+                _previousPoint = e.GetPosition(Canvas);
             }
 
             if (e.RightButton == MouseButtonState.Pressed)
             {
-                isErasing = true;
-                previousPoint = e.GetPosition(Canvas);
+                _isErasing = true;
+                _previousPoint = e.GetPosition(Canvas);
             }
         }
 
@@ -66,8 +66,8 @@ namespace WPF
         /// <param name="e"></param>
         private void Canvas_MouseUp(object sender, MouseButtonEventArgs e)
         {
-            isDrawing = false;
-            isErasing = false;
+            _isDrawing = false;
+            _isErasing = false;
         }
 
         /// <summary>
@@ -77,53 +77,48 @@ namespace WPF
         /// <param name="e"></param>
         private void Canvas_MouseMove(object sender, MouseEventArgs e)
         {
-            if (isDrawing)
+            // create point and store radius value
+            var currentPoint = e.GetPosition(Canvas);
+            double.TryParse(Radius.Text, out var radius);
+
+            // create circle
+            var circle = new Ellipse()
             {
-                Point currentPoint = e.GetPosition(Canvas);
+                Width = radius,
+                Height = radius
+            };
 
-                if (!Double.TryParse(Radius.Text, out double radius))
-                    radius = 20;
-
-                Ellipse circle = new Ellipse
-                {
-                    Fill = Brushes.Black,
-                    Width = radius,
-                    Height = radius
-                };
-
-                // Center the circle where the mouse is
-                Canvas.SetLeft(circle, currentPoint.X - radius / 2);
-                Canvas.SetTop(circle, currentPoint.Y - radius / 2);
-
-                Canvas.Children.Add(circle);
+            // Center the circle where the mouse is
+            Canvas.SetLeft(circle, currentPoint.X - radius / 2);
+            Canvas.SetTop(circle, currentPoint.Y - radius / 2);
+            
+            // make circle black if drawing
+            if (_isDrawing)
+                circle.Fill = new SolidColorBrush(Colors.Black);
+            
+            // make circle black if erasing
+            if (_isErasing)
+            {
+                circle.Fill = new SolidColorBrush(Colors.White);
+                circle.Width = radius * 2;
+                circle.Height = radius * 2;
             }
 
-            if (isErasing)
-            {
-                Point currentPoint = e.GetPosition(Canvas);
-
-                double radius = 100;
-                Ellipse circle = new Ellipse
-                {
-                    Fill = Brushes.White,
-                    Width = radius,
-                    Height = radius
-                };
-
-                // Center the circle where the mouse is
-                Canvas.SetLeft(circle, currentPoint.X - radius / 2);
-                Canvas.SetTop(circle, currentPoint.Y - radius / 2);
-
-                Canvas.Children.Add(circle);
-            }
+            // draw it on the canvas
+            Canvas.Children.Add(circle);
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void Handle_Save_Click(object sender, RoutedEventArgs e)
         {
-            string filename = "default.png";
+            SaveFile();
+        }
+
+        private void SaveFile()
+        {
+            string filename = "";
             try
             {
-                filename = "C:\\Users\\zachs\\source\\repos\\NumberRecognizer\\Numbers\\" + Save_File.Text + ".png";
+                filename = "C:\\Users\\zachs\\source\\repos\\NumberRecognizer\\Numbers\\CurrentNumber.png";
             }
             catch (System.Exception ex)
             {
@@ -150,6 +145,14 @@ namespace WPF
             {
                 pngEncoder.Save(fs);
             }
+        }
+
+        private void NumberRecognizer_Click(object sender, RoutedEventArgs e)
+        {
+            SaveFile();
+            int num = 5;
+            FinalNumber.Text = "This number is a " + num;
+            // implement NumberRecognizer call here
         }
     }
 }

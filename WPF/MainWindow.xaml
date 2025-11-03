@@ -15,14 +15,19 @@
                 MouseUp="Canvas_MouseUp" MouseMove="Canvas_MouseMove" Grid.ColumnSpan="2" />
         <TextBlock HorizontalAlignment="Left" Margin="290,0,0,0" TextWrapping="Wrap" VerticalAlignment="Top"
                    FontSize="15" Width="90" Height="23" Grid.Column="1" Text="Brush Size:"/>
-        <Button x:Name="Save_File_Button" Content="Save File" HorizontalAlignment="Left" Margin="291,134,0,0"
-                VerticalAlignment="Top" Height="43" Width="90" Click="Button_Click" FontSize="20" Grid.Column="1" />
-        <TextBox x:Name="Save_File" HorizontalAlignment="Left" Margin="291,101,0,0" TextWrapping="Wrap"
-                 VerticalAlignment="Top" Width="90" Height="28" FontSize="20" BorderThickness="1,1,1,1" Grid.Column="1" />
-        <TextBlock HorizontalAlignment="Left" Margin="293,76,0,0" TextWrapping="Wrap" VerticalAlignment="Top"
-                   FontSize="15" Width="90" Height="22" Text="File Name:" Grid.Column="1" />
-
+        <Button x:Name="Save_File_Button" Content="Save File" HorizontalAlignment="Left" Margin="286,83,0,0"
+                VerticalAlignment="Top" Height="43" Width="90" Click="Handle_Save_Click" FontSize="20" Grid.Column="1" >
+            <Button.Effect>
+                <DropShadowEffect/>
+            </Button.Effect>
+        </Button>
         <Slider x:Name="slider" Minimum="0" Maximum="50" Value="25" TickFrequency="1" IsSnapToTickEnabled="True" Margin="295,51,0,0" Grid.Column="1" VerticalAlignment="Top" HorizontalAlignment="Left" Height="20" Width="79"/>
         <TextBox x:Name="Radius" Text="{Binding Value, ElementName=slider, Mode=TwoWay}" Width="50" Margin="310,28,0,0" Grid.Column="1" VerticalAlignment="Top" HorizontalAlignment="Left" RenderTransformOrigin="0.526,0.815"/>
+        <Button x:Name="NumberRecognizer" Grid.Column="1" Content="What number &#xD;&#xA;is this?" HorizontalAlignment="Left" Margin="286,176,0,0" VerticalAlignment="Top" Height="41" Width="90" Click="NumberRecognizer_Click">
+            <Button.Effect>
+                <DropShadowEffect/>
+            </Button.Effect>
+        </Button>
+        <TextBox x:Name="FinalNumber" HorizontalAlignment="Left" Margin="286,137,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="90" Height="34" FontSize="12" BorderThickness="1,1,1,1" Grid.Column="1" />
     </Grid>
 </Window>
