@@ -123,7 +123,7 @@ namespace WPF
             string filename = "default.png";
             try
             {
-                filename = "C:\\Users\\zachs\\source\\repos\\NumberRecognizer\\WPF\\Numbers\\" + Save_File.Text + ".png";
+                filename = "C:\\Users\\zachs\\source\\repos\\NumberRecognizer\\Numbers\\" + Save_File.Text + ".png";
             }
 
             catch (System.Exception ex)
