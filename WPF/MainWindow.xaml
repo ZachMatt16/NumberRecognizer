@@ -7,11 +7,19 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
-        <Canvas x:Name="Canvas" Background="White" Margin="0,0,97,0" Cursor="Arrow" MouseDown="Canvas_MouseDown" MouseUp="Canvas_MouseUp" MouseMove="Canvas_MouseMove"/>
-        <TextBox x:Name="Radius" HorizontalAlignment="Left" Margin="708,72,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="95" Height="68" FontSize="25"/>
-        <TextBlock HorizontalAlignment="Left" Margin="708,0,0,0" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="25" Width="90" Height="60"><Run Text="Brush"/><LineBreak/><Run Text="Size:"/></TextBlock>
-        <Button x:Name="Save_File_Button" Content="Save File" HorizontalAlignment="Left" Margin="703,291,0,0" VerticalAlignment="Top" Height="49" Width="95" Click="Button_Click" FontSize="20"/>
-        <TextBox x:Name="Save_File" HorizontalAlignment="Left" Margin="708,217,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="90" Height="52" FontSize="20" BorderThickness="1,1,1,1" />
-        <TextBlock HorizontalAlignment="Left" Margin="710,140,0,0" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="25" Width="90" Height="60" Text="File Name:"/>
+        <Canvas x:Name="Canvas" Background="White" Margin="0,0,97,0" Cursor="Arrow" MouseDown="Canvas_MouseDown"
+                MouseUp="Canvas_MouseUp" MouseMove="Canvas_MouseMove" />
+        <TextBox x:Name="Radius" HorizontalAlignment="Left" Margin="708,72,0,0" TextWrapping="Wrap"
+                 VerticalAlignment="Top" Width="95" Height="68" FontSize="25" />
+        <TextBlock HorizontalAlignment="Left" Margin="708,0,0,0" TextWrapping="Wrap" VerticalAlignment="Top"
+                   FontSize="25" Width="90" Height="60">
+            <Run Text="Brush" /><LineBreak /><Run Text="Size:" />
+        </TextBlock>
+        <Button x:Name="Save_File_Button" Content="Save File" HorizontalAlignment="Left" Margin="703,291,0,0"
+                VerticalAlignment="Top" Height="49" Width="95" Click="Button_Click" FontSize="20" />
+        <TextBox x:Name="Save_File" HorizontalAlignment="Left" Margin="708,217,0,0" TextWrapping="Wrap"
+                 VerticalAlignment="Top" Width="90" Height="52" FontSize="20" BorderThickness="1,1,1,1" />
+        <TextBlock HorizontalAlignment="Left" Margin="710,140,0,0" TextWrapping="Wrap" VerticalAlignment="Top"
+                   FontSize="25" Width="90" Height="60" Text="File Name:" />
     </Grid>
 </Window>
