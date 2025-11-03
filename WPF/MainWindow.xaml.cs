@@ -125,7 +125,6 @@ namespace WPF
             {
                 filename = "C:\\Users\\zachs\\source\\repos\\NumberRecognizer\\Numbers\\" + Save_File.Text + ".png";
             }
-
             catch (System.Exception ex)
             {
                 Console.WriteLine(ex.Message);
