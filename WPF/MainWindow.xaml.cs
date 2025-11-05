@@ -11,6 +11,7 @@ using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using NumberRecognizer;
 
 namespace WPF
 {
@@ -34,6 +35,10 @@ namespace WPF
         /// </summary>
         private Point _previousPoint;
 
+        /// <summary>
+        ///  File path of the image
+        /// </summary>
+        private string _localFileName = "C:\\Users\\zachs\\RiderProjects\\NumberRecognizer\\Numbers\\CurrentNumber.png";
         public MainWindow()
         {
             InitializeComponent();
@@ -47,16 +52,13 @@ namespace WPF
         private void Canvas_MouseDown(object sender, MouseButtonEventArgs e)
         {
             if (e.LeftButton == MouseButtonState.Pressed)
-            {
                 _isDrawing = true;
-                _previousPoint = e.GetPosition(Canvas);
-            }
+
 
             if (e.RightButton == MouseButtonState.Pressed)
-            {
                 _isErasing = true;
-                _previousPoint = e.GetPosition(Canvas);
-            }
+
+            _previousPoint = e.GetPosition(Canvas);
         }
 
         /// <summary>
@@ -91,11 +93,11 @@ namespace WPF
             // Center the circle where the mouse is
             Canvas.SetLeft(circle, currentPoint.X - radius / 2);
             Canvas.SetTop(circle, currentPoint.Y - radius / 2);
-            
+
             // make circle black if drawing
             if (_isDrawing)
                 circle.Fill = new SolidColorBrush(Colors.Black);
-            
+
             // make circle black if erasing
             if (_isErasing)
             {
@@ -115,17 +117,7 @@ namespace WPF
 
         private void SaveFile()
         {
-            string filename = "";
-            try
-            {
-                filename = "C:\\Users\\zachs\\RiderProjects\\NumberRecognizer\\Numbers\\CurrentNumber.png";
-            }
-            catch (System.Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-            }
-
-            SaveWindowAsImage(filename);
+            SaveWindowAsImage(_localFileName);
         }
 
         private void SaveWindowAsImage(string filename)
@@ -138,9 +130,16 @@ namespace WPF
             RenderTargetBitmap rtb = new RenderTargetBitmap((int)width, (int)height, 96d, 96d, PixelFormats.Default);
             rtb.Render(Canvas);
 
+            // Transform BitMap to 28x28 pixels
+            var rtb28 = new TransformedBitmap();
+            rtb28.BeginInit();
+            rtb28.Source = rtb;
+            rtb28.Transform = new ScaleTransform(28.0 / width, 28.0 / height);
+            rtb28.EndInit();
+
             // Encode the RenderTargetBitmap to a PNG file
-            PngBitmapEncoder pngEncoder = new PngBitmapEncoder();
-            pngEncoder.Frames.Add(BitmapFrame.Create(rtb));
+            var pngEncoder = new PngBitmapEncoder();
+            pngEncoder.Frames.Add(BitmapFrame.Create(rtb28));
             using (var fs = System.IO.File.OpenWrite(filename))
             {
                 pngEncoder.Save(fs);
@@ -149,8 +148,9 @@ namespace WPF
 
         private void NumberRecognizer_Click(object sender, RoutedEventArgs e)
         {
-            SaveFile();
-            int num = 5;
+            var num = 5;
+            var nr = new SimpleNumberRecognizer();
+            nr.GetPixelVector(_localFileName);
             FinalNumber.Text = "This number is a " + num;
             // implement NumberRecognizer call here
         }
