@@ -149,8 +149,9 @@ namespace WPF
         private void NumberRecognizer_Click(object sender, RoutedEventArgs e)
         {
             var num = 5;
-            var nr = new SimpleNumberRecognizer();
-            nr.GetPixelVector(_localFileName);
+            SaveFile();
+            var nr = new SimpleNumberRecognizer(_localFileName);
+            num = nr.PredictNumber();
             FinalNumber.Text = "This number is a " + num;
             // implement NumberRecognizer call here
         }

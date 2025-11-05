@@ -12,8 +12,8 @@
             <ColumnDefinition Width="280"/>
             <ColumnDefinition Width="280"/>
         </Grid.ColumnDefinitions>
-        <Canvas x:Name="Canvas" Background="White" Margin="0,0,26,0" Cursor="Arrow" MouseDown="Canvas_MouseDown"
-                MouseUp="Canvas_MouseUp" MouseMove="Canvas_MouseMove" Width="280"/>
+        <Canvas x:Name="Canvas" Background="White" Margin="0,0,0,0" Cursor="Arrow" MouseDown="Canvas_MouseDown"
+                MouseUp="Canvas_MouseUp" MouseMove="Canvas_MouseMove" Width="280" Height="280" />
         <TextBlock HorizontalAlignment="Left" Margin="19,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top"
                    FontSize="15" Width="90" Height="23" Text="Brush Size:" Grid.Column="1"/>
         <Button x:Name="Save_File_Button" Content="Save File" HorizontalAlignment="Left" Margin="19,97,0,0"
