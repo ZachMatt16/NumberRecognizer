@@ -39,15 +39,15 @@ namespace NumberRecognizer
             InitializeWeightsAndBiases();
 
             // Feed forward / Matrix multiplication (Compute initial predictions)
-            double[] output = ForwardPropagation();
+            ForwardPropagation();
 
             int maxIndex = 0;
             double maxValue = double.MinValue;
-            for (int i = 0; i < output.Length; i++)
+            for (int i = 0; i < _outputLayer.Length; i++)
             {
-                if (output[i] > maxValue)
+                if (_outputLayer[i] > maxValue)
                 {
-                    maxValue = output[i];
+                    maxValue = _outputLayer[i];
                     maxIndex = i;
                 }
             }
@@ -74,13 +74,12 @@ namespace NumberRecognizer
 
             // normalize and grayscale the pixels
             for (var i = 0; i < pixelSpan.Length; i++)
-                normalizedGrayScalePixels[i] =
-                    Math.Round((pixelSpan[i].R * rScale + pixelSpan[i].G * gScale + pixelSpan[i].B * bScale) / 255, 3);
-            
-            PrintPixels(normalizedGrayScalePixels);
+                normalizedGrayScalePixels[i] = (pixelSpan[i].R * rScale + pixelSpan[i].G * gScale + pixelSpan[i].B * bScale) / 255;
 
             _pixels = normalizedGrayScalePixels;
 
+            PrintPixels();
+            
             return normalizedGrayScalePixels;
         }
 
@@ -189,18 +188,18 @@ namespace NumberRecognizer
         }
 
         // TODO: XML
-        private void PrintPixels(double[] pixels)
+        private void PrintPixels()
         {
             // print the length of the pixel vector
-            Console.WriteLine("Length: " + pixels.Length);
+            Console.WriteLine("Length: " + _pixels.Length);
             Console.WriteLine();
 
-            for (int i = 0; i < pixels.Length; i += 28)
+            for (int i = 0; i < _pixels.Length; i += 28)
             {
                 for (int j = i; j < i + 28; j++)
                 {
-                    var pixel = pixels[j];
-                    Console.ForegroundColor = pixel < 1.0 ? ConsoleColor.Green : ConsoleColor.Blue;
+                    var pixel = _pixels[j];
+                    Console.BackgroundColor = pixel < 1.0 ? ConsoleColor.Gray : ConsoleColor.Black;
                     Console.Write($"{pixel:F2} ");
                 }
 
