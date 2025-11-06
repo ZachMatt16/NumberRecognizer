@@ -12,10 +12,6 @@ public class Matrix<T>
     /// </summary>
     private readonly T[][] _backing2DArray;
 
-    public int Rows => _backing2DArray.Length;
-    public int Cols => _backing2DArray[0].Length;
-
-
     /// <summary>
     ///  Constructs a Matrix of size row x col.
     /// </summary>
@@ -30,54 +26,75 @@ public class Matrix<T>
     }
 
     /// <summary>
-    ///  Constructs a Matrix from existing 2D array
+    ///  Constructs a Matrix from existing 2D array.
     /// </summary>
     public Matrix(T[][] matrix)
     {
         _backing2DArray = matrix;
     }
 
-    public T GetValue(int rowIndex, int colIndex)
+    /// <summary>
+    ///  Public property for the number of rows of the matrix.
+    /// </summary>
+    public int Rows => _backing2DArray.Length;
+
+    /// <summary>
+    ///  Public property for the number of columns of the matrix.
+    /// </summary>
+    public int Cols => _backing2DArray[0].Length;
+
+    /// <summary>
+    ///  Indexer for the matrix.
+    /// </summary>
+    /// <param name="row"> Row index. </param>
+    /// <param name="col"> Column index. </param>
+    public T this[int row, int col]
     {
-        return _backing2DArray[rowIndex][colIndex];
+        get => _backing2DArray[row][col];
+        set => _backing2DArray[row][col] = value;
     }
 
+    /// <summary>
+    ///  Takes the transpose of the given matrix and returns it.
+    /// </summary>
+    /// <param name="matrix"> The given matrix. </param>
+    /// <returns> The transpose of the given matrix. </returns>
     public static Matrix<T> Transpose(Matrix<T> matrix)
     {
-        // Create new 2D array
-        var transpose = new T[matrix.Cols][];
-        
+        // Create matrix
+        var transpose = new Matrix<T>(matrix.Rows, matrix.Cols);
+
         // Transpose array
         for (var i = 0; i < matrix.Rows; i++)
-        {
-            transpose[i] = new T[matrix.Rows];
-            for (var j = 0; j < matrix.Cols; j++)
-                transpose[j][i] = matrix.GetValue( i, j);
-        }
-        return new Matrix<T>(transpose);
+        for (var j = 0; j < matrix.Cols; j++)
+            transpose[j, i] = matrix[i, j];
+
+        return transpose;
     }
 
+    /// <summary>
+    ///  Preforms matrix multiplication on the two matrices in the order given, ie: m1 x m2.
+    ///  If the number of columns of m1 don't match the number of rows of m2 then a 
+    ///  MatrixDimensionMismatchException is thrown. 
+    /// </summary>
+    /// <param name="m1"> The first matrix. </param>
+    /// <param name="m2"> The second matrix. </param>
+    /// <returns> The product of the two matrices. </returns>
+    /// <exception cref="MatrixDimensionMismatchException"> Thrown if the number of columns of m1 don't match the number of rows of m2 </exception>
     public static Matrix<double> MatrixMultiplication(Matrix<double> m1, Matrix<double> m2)
     {
-        // Throw error if dimensions don't match
+        // Check if dimensions match
         if (m1.Cols != m2.Rows)
             throw new MatrixDimensionMismatchException("Matrix size mismatch");
-        
-        // Matrix multiplication
-        var result = new double[m1.Rows][];
-        for (int i = 0; i < m1.Rows; i++) // iterate over m1 rows
-        {
-            result[i] = new double[m2.Cols];
-            for (int j = 0; j < m2.Cols; j++) // iterate over m2 columns
-            {
-                double sum = 0;
-                for (int k = 0; k < m1.Cols; k++) // iterate over shared dimension
-                    sum += m1.GetValue(i, k) * m2.GetValue(k, j);
-                result[i][j] = sum;
-            }
-        }
 
-        return new Matrix<double>(result);
+        // Matrix multiplication
+        var result = new Matrix<double>(m1.Rows, m2.Cols);
+        for (var i = 0; i < m1.Rows; i++) // iterate over m1 rows
+        for (var j = 0; j < m2.Cols; j++) // iterate over m2 columns
+        for (var k = 0; k < m1.Cols; k++) // iterate over shared dimension
+            result[i, j] += m1[i, k] * m2[k, j];
+
+        return result;
     }
 }
 
