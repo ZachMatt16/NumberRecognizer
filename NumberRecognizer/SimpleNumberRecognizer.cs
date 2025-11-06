@@ -20,7 +20,7 @@ namespace NumberRecognizer
         private readonly double[] _preActivationHiddenLayerZ1 = new double[64];
         private readonly double[] _hiddenLayerA1 = new double[64];
         private readonly double[] _preActivationOutputLayerZ2 = new double[10];
-        private readonly double[] _outputLayerA1 = new double[10];
+        private readonly double[] _outputLayerA2 = new double[10];
 
         private double[][] _allMNISTImages;
         private int[][] _allMNISTLabels;
@@ -38,7 +38,7 @@ namespace NumberRecognizer
         {
             // Read and store MNIST dataset
             ReadMNIST();
-            SaveMNISTImageAsPNG();
+            //SaveMNISTImageAsPNG();
 
             // Get Normalized Pixel Vector
             GetPixelVector();
@@ -106,7 +106,7 @@ namespace NumberRecognizer
                 byte[] pixels = imageReader.ReadBytes(numCols * numRows);
                 double[] normalizedPixels = new double[numCols * numRows];
                 for (int j = 0; j < normalizedPixels.Length; j++)
-                    normalizedPixels[j] = pixels[j] / 255.0; // convert + normalize
+                    normalizedPixels[j] = pixels[j] / 255.0; // normalize
 
                 _allMNISTImages[i] = normalizedPixels; // save each image
             }
@@ -189,7 +189,7 @@ namespace NumberRecognizer
             // Matrix multiplication between hidden layer weights and initial pixel values and biases
             for (var i = 0; i < _weights1.Length; i++)
             for (var j = 0; j < _weights1[i].Length; j++)
-                _preActivationHiddenLayerZ1[i] = _weights1[i][j] * _allMNISTImages[mnistIndex][i] + _biases1[i];
+                _preActivationHiddenLayerZ1[i] += _weights1[i][j] * _allMNISTImages[mnistIndex][j] + _biases1[i];
 
             // ReLU activation 
             for (var i = 0; i < _preActivationHiddenLayerZ1.Length; i++)
@@ -198,29 +198,30 @@ namespace NumberRecognizer
             // Matrix multiplication between output layer weights and hidden layer output values and biases
             for (var i = 0; i < _weights2.Length; i++)
             for (var j = 0; j < _weights2[i].Length; j++)
-                _preActivationOutputLayerZ2[i] = _weights2[i][j] * _hiddenLayerA1[i] + _biases2[i];
+                _preActivationOutputLayerZ2[i] += _weights2[i][j] * _hiddenLayerA1[j] + _biases2[i];
 
             // Softmax activation 
             double exponentiatedOutputSum = 0;
             foreach (var value in _preActivationOutputLayerZ2)
                 exponentiatedOutputSum += Math.Exp(value);
             for (var i = 0; i < _preActivationOutputLayerZ2.Length; i++)
-                _outputLayerA1[i] = Math.Exp(_preActivationOutputLayerZ2[i]) / exponentiatedOutputSum;
+                _outputLayerA2[i] = Math.Exp(_preActivationOutputLayerZ2[i]) / exponentiatedOutputSum;
 
-            return _outputLayerA1;
+            return _outputLayerA2;
         }
 
 
         private void TrainWeights(int mnistIndex)
         {
             // Loss Function
-            var loss = -Math.Log2(_outputLayerA1.Max());
+            var loss = -Math.Log2(_outputLayerA2.Max());
 
             // Output layer loss
             var d2 = CalculateOutputLayerError(mnistIndex);
-
-
+            
             // Output layer weight gradient
+            (double[][] oWG, double[] oBG) = CalculateOutputLayerGradient(d2);
+            PrintMatrix(oWG);
 
             // Output layer biases gradient
 
@@ -231,17 +232,37 @@ namespace NumberRecognizer
             // Hidden layer biases gradient
         }
 
+        //TODO: XML
         private double[] CalculateOutputLayerError(int mnistIndex)
         {
-            var d2 = new double[_outputLayerA1.Length];
-            for (var i = 0; i < _outputLayerA1.Length; i++)
+            var d2 = new double[_outputLayerA2.Length];
+            for (var i = 0; i < _outputLayerA2.Length; i++)
             {
-                d2[i] = _outputLayerA1[i] - _allMNISTLabels[mnistIndex][i];
-                Console.WriteLine($"{_outputLayerA1[i]} - {_allMNISTLabels[mnistIndex][i]}");
+                d2[i] = _outputLayerA2[i] - _allMNISTLabels[mnistIndex][i];
+                Console.WriteLine($"{_outputLayerA2[i]} - {_allMNISTLabels[mnistIndex][i]}");
             }
 
             Console.WriteLine();
             return d2;
+        }
+
+        private (double[][], double[]) CalculateOutputLayerGradient(double[] d2)
+        {
+            // calculate the gradient for the weights of the output layer
+            var outputWeightGradient = new double[d2.Length][];
+            for (var i = 0; i < outputWeightGradient.Length; i++)
+            {
+                outputWeightGradient[i] = new double[_hiddenLayerA1.Length];
+                for (var j = 0; j < outputWeightGradient[i].Length; j++)
+                {
+                    outputWeightGradient[i][j] = d2[i] * _hiddenLayerA1[j];
+                }
+            }
+
+            // calculate the gradient for the biases of the output layer
+            var outputBiasesGradient = d2;
+
+            return (outputWeightGradient, outputBiasesGradient);
         }
 
         //TODO: xml
@@ -289,7 +310,7 @@ namespace NumberRecognizer
         private void PrintOutputLayer()
         {
             Console.WriteLine("Output layer: ");
-            foreach (var value in _outputLayerA1)
+            foreach (var value in _outputLayerA2)
                 Console.Write(value + " ");
         }
 
@@ -297,36 +318,16 @@ namespace NumberRecognizer
         private void PrintWeights()
         {
             Console.WriteLine("Weights for hidden layer: ");
-            foreach (var row in _weights1)
-            {
-                foreach (var weight in row)
-                    Console.Write($"{weight:F3} ");
-                Console.WriteLine();
-            }
-
-            Console.WriteLine();
-
+            PrintMatrix(_weights1);
+            
             Console.WriteLine("Biases for hidden layer: ");
-            foreach (var bias in _biases1)
-                Console.Write($"{bias:F3} ");
-
-            Console.WriteLine();
+            PrintMatrix(_biases1);
 
             Console.WriteLine("Weights for output layer: ");
-            foreach (var row in _weights2)
-            {
-                foreach (var weight in row)
-                    Console.Write($"{weight:F3} ");
-                Console.WriteLine();
-            }
-
-            Console.WriteLine();
+            PrintMatrix(_weights2);
 
             Console.WriteLine("Biases for output layer: ");
-            foreach (var bias in _biases2)
-                Console.Write($"{bias:F3} ");
-
-            Console.WriteLine();
+            PrintMatrix(_biases2);
         }
 
         // TODO: XML
@@ -348,6 +349,25 @@ namespace NumberRecognizer
                 Console.WriteLine();
             }
 
+            Console.WriteLine();
+        }
+
+        private void PrintMatrix(double[][] matrix)
+        {
+            foreach (var row in matrix)
+            {
+                foreach (var element in row)
+                    Console.Write($"{element:F3} ");
+                Console.WriteLine();
+            }
+
+            Console.WriteLine();
+        }
+
+        private void PrintMatrix(double[] matrix)
+        {
+            foreach (var element in matrix)
+                Console.Write($"{element:F3} ");
             Console.WriteLine();
         }
     }
