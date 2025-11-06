@@ -277,16 +277,6 @@ namespace NumberRecognizer
             return _preActivationHiddenLayerZ1[index] > 0 ? 1 : 0;
         }
 
-        private double[][] MatrixMultiplication(double[][] m1, double[][] m2)
-        {
-            
-        }
-        
-        private double[][] Transpose(double[][] matrix)
-        {
-            
-        }
-
         //TODO: xml
         private int ReadBigInt32(BinaryReader br)
         {

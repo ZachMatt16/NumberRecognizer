@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WPF", "WPF\WPF.csproj", "{1
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NumberRecognizer", "NumberRecognizer\NumberRecognizer.csproj", "{FC1FA16C-1E01-49DC-8E34-96E276DA5AD5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MatrixMath", "MatrixMath\MatrixMath.csproj", "{0F57C79F-8C4F-4708-89B4-4B925AD24472}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Matrix", "Matrix\Matrix.csproj", "{0F57C79F-8C4F-4708-89B4-4B925AD24472}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
