@@ -5,12 +5,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Matrix;
 
 namespace NumberRecognizer
 {
     public class SimpleNumberRecognizer
     {
-        private double[] _pixels = new double[784];
+        //private double[] _pixels = new double[784];
+        private Matrix<double> _pixels = new (784, 1);
 
         private readonly double[][] _weights1 = new double[64][];
         private readonly double[] _biases1 = new double[64];
@@ -60,11 +62,11 @@ namespace NumberRecognizer
 
             // int maxIndex = 0;
             // double maxValue = double.MinValue;
-            // for (int i = 0; i < _outputLayerA1.Length; i++)
+            // for (int i = 0; i < _outputLayerA2.Length; i++)
             // {
-            //     if (_outputLayerA1[i] > maxValue)
+            //     if (_outputLayerA2[i] > maxValue)
             //     {
-            //         maxValue = _outputLayerA1[i];
+            //         maxValue = _outputLayerA2[i];
             //         maxIndex = i;
             //     }
             // }
