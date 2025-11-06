@@ -216,16 +216,17 @@ namespace NumberRecognizer
             // Loss Function
             var loss = -Math.Log2(_outputLayerA2.Max());
 
-            // Output layer loss
+            // Output layer error
             var d2 = CalculateOutputLayerError(mnistIndex);
+            //PrintMatrix(d2);
             
-            // Output layer weight gradient
+            // Output layer weight and biases gradient
             (double[][] oWG, double[] oBG) = CalculateOutputLayerGradient(d2);
             PrintMatrix(oWG);
+            
+            // Hidden layer error
+            CalculateHiddenLayerError(d2);
 
-            // Output layer biases gradient
-
-            // Hidden layer loss
 
             // Hidden layer weight gradient
 
@@ -237,32 +238,53 @@ namespace NumberRecognizer
         {
             var d2 = new double[_outputLayerA2.Length];
             for (var i = 0; i < _outputLayerA2.Length; i++)
-            {
                 d2[i] = _outputLayerA2[i] - _allMNISTLabels[mnistIndex][i];
-                Console.WriteLine($"{_outputLayerA2[i]} - {_allMNISTLabels[mnistIndex][i]}");
-            }
-
-            Console.WriteLine();
             return d2;
         }
 
         private (double[][], double[]) CalculateOutputLayerGradient(double[] d2)
         {
             // calculate the gradient for the weights of the output layer
-            var outputWeightGradient = new double[d2.Length][];
-            for (var i = 0; i < outputWeightGradient.Length; i++)
+            var outputWeightGradient = new double[d2.Length][]; // 10x64
+            for (var i = 0; i < outputWeightGradient.Length; i++) // 10x
             {
-                outputWeightGradient[i] = new double[_hiddenLayerA1.Length];
-                for (var j = 0; j < outputWeightGradient[i].Length; j++)
-                {
-                    outputWeightGradient[i][j] = d2[i] * _hiddenLayerA1[j];
-                }
+                outputWeightGradient[i] = new double[_hiddenLayerA1.Length]; // 64x1
+                for (var j = 0; j < outputWeightGradient[i].Length; j++) // 64x
+                    outputWeightGradient[i][j] += d2[i] * _hiddenLayerA1[j]; // 10x1 * 1x64 = 10x64
             }
 
             // calculate the gradient for the biases of the output layer
             var outputBiasesGradient = d2;
 
             return (outputWeightGradient, outputBiasesGradient);
+        }
+
+        private void CalculateHiddenLayerError(double[] d2)
+        {
+            double[] d1 = new double[_weights2[0].Length]; // 64x1
+            for (int i = 0; i < d1.Length; i++) // 64x
+            {
+                for (int j = 0; j < _weights2.Length; j++) // 10x
+                {
+                    d1[i] += _weights2[j][i] * d2[j]; // 64x10 * 64x1 = 64x1
+                }
+                d1[i] *= ReLUDerivative(i);
+            }
+        }
+
+        private int ReLUDerivative(int index)
+        {
+            return _preActivationHiddenLayerZ1[index] > 0 ? 1 : 0;
+        }
+
+        private double[][] MatrixMultiplication(double[][] m1, double[][] m2)
+        {
+            
+        }
+        
+        private double[][] Transpose(double[][] matrix)
+        {
+            
         }
 
         //TODO: xml
@@ -310,8 +332,7 @@ namespace NumberRecognizer
         private void PrintOutputLayer()
         {
             Console.WriteLine("Output layer: ");
-            foreach (var value in _outputLayerA2)
-                Console.Write(value + " ");
+            PrintMatrix(_outputLayerA2);
         }
 
         //TODO: xml
@@ -360,7 +381,6 @@ namespace NumberRecognizer
                     Console.Write($"{element:F3} ");
                 Console.WriteLine();
             }
-
             Console.WriteLine();
         }
 
