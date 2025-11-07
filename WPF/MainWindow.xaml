@@ -12,7 +12,7 @@
             <ColumnDefinition Width="280"/>
             <ColumnDefinition Width="280"/>
         </Grid.ColumnDefinitions>
-        <Canvas x:Name="Canvas" Background="White" Margin="0,0,0,0" Cursor="Arrow" MouseDown="Canvas_MouseDown"
+        <Canvas x:Name="Canvas" Background="Black" Margin="0,0,0,0" Cursor="Arrow" MouseDown="Canvas_MouseDown"
                 MouseUp="Canvas_MouseUp" MouseMove="Canvas_MouseMove" Width="280" Height="280" />
         <TextBlock HorizontalAlignment="Left" Margin="19,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top"
                    FontSize="15" Width="75" Height="18" Text="Brush Size:" Grid.Column="1"/>
@@ -29,7 +29,7 @@
                 <DropShadowEffect/>
             </Button.Effect>
         </Button>
-        <TextBox x:Name="FinalNumber" HorizontalAlignment="Left" Margin="19,120,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="75" Height="26" FontSize="12" BorderThickness="1,1,1,1" Grid.Column="1" />
+        <TextBox x:Name="FinalNumber" HorizontalAlignment="Left" Margin="19,120,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="75" Height="26" FontSize="10" BorderThickness="1,1,1,1" Grid.Column="1" />
         <Button x:Name="Train" Content="Train model X times" HorizontalAlignment="Left" Margin="19,229,0,0" VerticalAlignment="Top" Height="32" Width="75" Grid.Column="1" FontSize="8" Click="Train_Click">
             <Button.Effect>
                 <DropShadowEffect/>

@@ -31,49 +31,80 @@ namespace NumberRecognizer
 
         private readonly string _filename;
 
+        /// <summary>
+        ///  Constructs a SimpleNumberRecognizer and initialize random weights and biases. 
+        /// </summary>
+        /// <param name="filename"> Filename of the image path. </param>
         public SimpleNumberRecognizer(string filename)
         {
-            _filename = filename;
             // Initialize random weights and biases (W1: 784 x 64, b1: 64x1, W2: 64x10, b2: 10x1)
             InitializeWeightsAndBiases();
+            _filename = filename;
         }
 
+        /// <summary>
+        ///  Predicts the number from the current drawn image.
+        /// </summary>
+        /// <returns> The final prediction. </returns>
         public int PredictNumber()
         {
             //PrintWeights();
-            
+
             // Get Normalized Pixel Vector
             var drawnImageMatrix = GetPixelMatrix();
             //PrintPixels();
 
             // Forward Propagate (Make guess)
             var output = ForwardPropagation(drawnImageMatrix);
-            //PrintOutputLayer();
+            PrintOutputLayer();
 
             return FinalGuess(output);
         }
 
+        /// <summary>
+        ///  Trains the model on iteration MNIST images from the MNIST dataset.
+        /// </summary>
+        /// <param name="iterations"> The number of images to train the model on </param>
         public void TrainModel(int iterations)
         {
             _numOfMNISTImages = iterations;
             // Read and store MNIST dataset
             ReadMNIST(_numOfMNISTImages);
-            SaveMNISTImageAsPNG();
-            
+            //SaveMNISTImageAsPNG();
+
             for (int i = 0; i < _numOfMNISTImages; i++)
             {
                 // Feed forward (Compute initial predictions)
                 var output = ForwardPropagation(_allMNISTImages[i]);
-            
+
                 // Backward propagation (Train weights)
                 TrainWeights(_allMNISTImages[i], _allMNISTLabels[i]);
-                
-                var label = FinalGuess(_allMNISTLabels[i]);
-                var guess = FinalGuess(output);
-                Console.WriteLine($"Correct answer: {label}. Guess: {guess}");
-                PrintOutputLayer();
+
+                if (i % 25 == 0)
+                {
+                    var label = FinalGuess(_allMNISTLabels[i]);
+                    var guess = FinalGuess(output);
+                    Console.Write($"Image: {i} Correct answer: {label} Guess: {guess} ");
+
+                    if (guess == label)
+                    {
+                        Console.BackgroundColor = ConsoleColor.Green;
+                        Console.ForegroundColor = ConsoleColor.White;
+                        Console.Write(" CORRECT!");
+                        Console.ResetColor();
+                    }
+                    else
+                    {
+                        Console.BackgroundColor = ConsoleColor.Red;
+                        Console.ForegroundColor = ConsoleColor.White;
+                        Console.Write(" INCORRECT!");
+                        Console.ResetColor();
+                    }
+
+                    Console.ResetColor();
+                    Console.WriteLine();
+                }
             }
-            
         }
 
         /// <summary>
@@ -424,7 +455,14 @@ namespace NumberRecognizer
         private void PrintOutputLayer()
         {
             Console.WriteLine("Output layer: ");
-            PrintMatrix(_outputLayerA2);
+            for (int i = 0; i < _outputLayerA2.Rows; i++)
+            {
+                for (int j = 0; j < _outputLayerA2.Cols; j++)
+                    Console.Write($"{i} -- {_outputLayerA2[i, j]:F3} ");
+                Console.WriteLine();
+            }
+
+            Console.WriteLine();
         }
 
         /// <summary>

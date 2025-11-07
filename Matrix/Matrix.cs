@@ -76,7 +76,7 @@ public class Matrix<T> where T : IComparable<T>
     public static Matrix<T> Transpose(Matrix<T> matrix)
     {
         // Create matrix
-        var transpose = new Matrix<T>(matrix.Rows, matrix.Cols);
+        var transpose = new Matrix<T>(matrix.Cols, matrix.Rows);
 
         // Transpose array
         for (var i = 0; i < matrix.Rows; i++)

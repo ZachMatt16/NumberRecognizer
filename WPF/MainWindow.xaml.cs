@@ -34,11 +34,14 @@ namespace WPF
         /// Field to store the previous point for drawing lines
         /// </summary>
         private Point _previousPoint;
-
+        
         /// <summary>
         ///  File path of the image
         /// </summary>
         private string _localFileName = "C:\\Users\\zachs\\RiderProjects\\NumberRecognizer\\Numbers\\CurrentNumber.png";
+        
+        private SimpleNumberRecognizer nr = new SimpleNumberRecognizer("C:\\Users\\zachs\\RiderProjects\\NumberRecognizer\\Numbers\\CurrentNumber.png");
+        
         public MainWindow()
         {
             InitializeComponent();
@@ -89,23 +92,23 @@ namespace WPF
                 Width = radius,
                 Height = radius
             };
-
-            // Center the circle where the mouse is
-            Canvas.SetLeft(circle, currentPoint.X - radius / 2);
-            Canvas.SetTop(circle, currentPoint.Y - radius / 2);
-
+            
             // make circle black if drawing
             if (_isDrawing)
-                circle.Fill = new SolidColorBrush(Colors.Black);
+                circle.Fill = new SolidColorBrush(Colors.White);
 
             // make circle black if erasing
             if (_isErasing)
             {
-                circle.Fill = new SolidColorBrush(Colors.White);
-                circle.Width = radius * 2;
-                circle.Height = radius * 2;
+                circle.Fill = new SolidColorBrush(Colors.Black);
+                circle.Width = radius * 5;
+                circle.Height = radius * 5;
             }
 
+            // Center the circle where the mouse is
+            Canvas.SetLeft(circle, currentPoint.X - circle.Width / 2);
+            Canvas.SetTop(circle, currentPoint.Y - circle.Height / 2);
+            
             // draw it on the canvas
             Canvas.Children.Add(circle);
         }
@@ -149,15 +152,13 @@ namespace WPF
         private void NumberRecognizer_Click(object sender, RoutedEventArgs e)
         {
             SaveFile();
-            var nr = new SimpleNumberRecognizer(_localFileName);
-            var num = nr.PredictNumber();
-            FinalNumber.Text = "This number is a " + num;
-            // implement NumberRecognizer call here
+            FinalNumber.Text = "This number is a " + nr.PredictNumber();;
         }
 
         private void Train_Click(object sender, RoutedEventArgs e)
         {
-            var nr = new SimpleNumberRecognizer(_localFileName);
+            int.TryParse(Train_Iterations.Text, out int iterations);
+            nr.TrainModel(iterations);
         }
     }
 }
