@@ -26,7 +26,7 @@ namespace NumberRecognizer
         private List<Matrix<double>> _allMNISTImages; // List of 784x1 matrices
         private List<Matrix<double>> _allMNISTLabels; // List of 10x1 matrices
 
-        private const int NumOfMNISTImages = 2;
+        private const int NumOfMNISTImages = 1;
         private const double LearningLevel = .01;
 
         private readonly string _filename;
@@ -39,26 +39,28 @@ namespace NumberRecognizer
         public int PredictNumber()
         {
             // Read and store MNIST dataset
-            // ReadMNIST(NumOfMNISTImages);
-            // SaveMNISTImageAsPNG();
+            ReadMNIST(NumOfMNISTImages);
+            SaveMNISTImageAsPNG();
 
             // Get Normalized Pixel Vector
-            GetPixelMatrix();
+            var drawnImageMatrix = GetPixelMatrix();
             PrintPixels();
 
             // Initialize random weights and biases (W1: 784 x 64, b1: 64x1, W2: 64x10, b2: 10x1)
             InitializeWeightsAndBiases();
             //PrintWeights();
-            PrintOutputLayer();
 
+            ForwardPropagation(drawnImageMatrix);
+            PrintOutputLayer();
+            
             // for (int i = 0; i < NumOfMNISTImages; i++)
             // {
             //     // Feed forward / Matrix multiplication (Compute initial predictions)
-            //     ForwardPropagation(i);
+            //     ForwardPropagation(_allMNISTImages[i]);
             //     //PrintMatrix(matrix);
             //
             //     // Backward propagation (Train weights)
-            //     TrainWeights(i);
+            //     //TrainWeights(_allMNISTImages[i], _allMNISTLabels[i]);
             // }
 
             return FinalGuess();
@@ -99,7 +101,7 @@ namespace NumberRecognizer
             for (var i = 0; i < iterations; i++)
             {
                 var pixels = imageReader.ReadBytes(numRows * numCols);
-                _allMNISTImages[i] = new Matrix<double>(numRows * numCols, 1); // 784x1 matrix
+                _allMNISTImages.Add(new Matrix<double>(numRows * numCols, 1)); // 784x1 matrix
                 for (var j = 0; j < _allMNISTImages[i].Rows; j++)
                     _allMNISTImages[i][j, 0] = pixels[j] / 255.0; // normalize and save image
             }
@@ -109,7 +111,7 @@ namespace NumberRecognizer
             _allMNISTLabels = new List<Matrix<double>>(numLabels);
             for (var i = 0; i < iterations; i++)
             {
-                _allMNISTLabels[i] = new Matrix<double>(10, 1); // number of digits is 10
+                _allMNISTLabels.Add(new Matrix<double>(10, 1)); // number of digits is 10
                 var index = labelReader.ReadByte();
                 for (var j = 0; j < index; j++)
                     _allMNISTLabels[i][j, 0] = 0;
@@ -176,11 +178,11 @@ namespace NumberRecognizer
         /// </summary>
         /// <param name="matrix"> The given matrix. </param>
         /// <returns> The final output layer. </returns>
-        private Matrix<double> ForwardPropagation(int mnistIndex)
+        private Matrix<double> ForwardPropagation(Matrix<double> imageMatrix)
         {
             // Multiply image pixels by hidden layer weights then add the hidden layer biases
             _preActivationHiddenLayerZ1 = Matrix<double>.MatrixAddition(
-                Matrix<double>.MatrixMultiplication(_weights1, _allMNISTImages[mnistIndex]), _biases1); // 64x1 matrix
+                Matrix<double>.MatrixMultiplication(_weights1, imageMatrix), _biases1); // 64x1 matrix
 
             // ReLU activation 
             for (var i = 0; i < _hiddenLayerA1.Rows; i++)
@@ -205,13 +207,13 @@ namespace NumberRecognizer
         ///  Trains the weights given an image and correct label.
         /// </summary>
         /// <param name="mnistIndex"> Index of image and label. </param>
-        private void TrainWeights(int mnistIndex)
+        private void TrainWeights(Matrix<double> imageMatrix, Matrix<double> labelMatrix)
         {
             // Loss Function
             var loss = -Math.Log2(_outputLayerA2.Max());
 
             // Output layer error
-            var d2 = CalculateOutputLayerError(mnistIndex);
+            var d2 = CalculateOutputLayerError(labelMatrix);
 
             // Output layer weight and biases gradient
             (Matrix<double> oWG, Matrix<double> oBG) = CalculateOutputLayerGradient(d2);
@@ -220,7 +222,7 @@ namespace NumberRecognizer
             var d1 = CalculateHiddenLayerError(d2);
 
             // Hidden layer weight and biases gradient
-            (Matrix<double> hWG, Matrix<double> hBG) = CalculateHiddenLayerGradient(d1, mnistIndex);
+            (Matrix<double> hWG, Matrix<double> hBG) = CalculateHiddenLayerGradient(d1, imageMatrix);
 
             // Update weights based on gradients
             UpdateWeights(hWG, hBG, oWG, oBG);
@@ -231,11 +233,11 @@ namespace NumberRecognizer
         /// </summary>
         /// <param name="mnistIndex"> The index of the one-hot label matrix. </param>
         /// <returns> A matrix representing the error of the output layer. </returns>
-        private Matrix<double> CalculateOutputLayerError(int mnistIndex)
+        private Matrix<double> CalculateOutputLayerError(Matrix<double> labelMatrix)
         {
             var d2 = new Matrix<double>(_outputLayerA2.Rows, 1); // 10x1 matrix
             for (var i = 0; i < d2.Rows; i++)
-                d2[i, 0] = _outputLayerA2[i, 0] - _allMNISTLabels[mnistIndex][i, 0];
+                d2[i, 0] = _outputLayerA2[i, 0] - labelMatrix[i, 0];
             return d2;
         }
 
@@ -279,12 +281,13 @@ namespace NumberRecognizer
         /// <param name="d1"> The hidden layer error. </param>
         /// <param name="mnistIndex"> The index of the image matrix.</param>
         /// <returns> The gradients for the hidden layer weights and biases. </returns>
-        private (Matrix<double>, Matrix<double>) CalculateHiddenLayerGradient(Matrix<double> d1, int mnistIndex)
+        private (Matrix<double>, Matrix<double>) CalculateHiddenLayerGradient(Matrix<double> d1,
+            Matrix<double> imageMatrix)
         {
             // calculate the gradient for the weights of the hidden layer 
             var hiddenWeightGradient =
                 Matrix<double>.MatrixMultiplication(d1,
-                    Matrix<double>.Transpose(_allMNISTImages[mnistIndex])); // 64x784 matrix
+                    Matrix<double>.Transpose(imageMatrix)); // 64x784 matrix
 
             // calculate the gradient for the biases of the hidden layer
             var hiddenBiasesGradient = d1; // 64x1 matrix 
