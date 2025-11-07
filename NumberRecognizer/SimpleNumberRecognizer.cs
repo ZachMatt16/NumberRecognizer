@@ -39,40 +39,29 @@ namespace NumberRecognizer
         public int PredictNumber()
         {
             // Read and store MNIST dataset
-            ReadMNIST(NumOfMNISTImages);
-            SaveMNISTImageAsPNG();
+            // ReadMNIST(NumOfMNISTImages);
+            // SaveMNISTImageAsPNG();
 
             // Get Normalized Pixel Vector
             GetPixelMatrix();
-            //PrintPixels();
+            PrintPixels();
 
             // Initialize random weights and biases (W1: 784 x 64, b1: 64x1, W2: 64x10, b2: 10x1)
             InitializeWeightsAndBiases();
             //PrintWeights();
+            PrintOutputLayer();
 
-            for (int i = 0; i < NumOfMNISTImages; i++)
-            {
-                // Feed forward / Matrix multiplication (Compute initial predictions)
-                ForwardPropagation(i);
-                //PrintMatrix(matrix);
-
-                // Backward propagation (Train weights)
-                TrainWeights(i);
-            }
-
-            // int maxIndex = 0;
-            // double maxValue = double.MinValue;
-            // for (int i = 0; i < _outputLayerA2.Length; i++)
+            // for (int i = 0; i < NumOfMNISTImages; i++)
             // {
-            //     if (_outputLayerA2[i] > maxValue)
-            //     {
-            //         maxValue = _outputLayerA2[i];
-            //         maxIndex = i;
-            //     }
-            // }
+            //     // Feed forward / Matrix multiplication (Compute initial predictions)
+            //     ForwardPropagation(i);
+            //     //PrintMatrix(matrix);
             //
-            // return maxIndex;
-            return 0;
+            //     // Backward propagation (Train weights)
+            //     TrainWeights(i);
+            // }
+
+            return FinalGuess();
         }
 
         /// <summary>
@@ -113,7 +102,6 @@ namespace NumberRecognizer
                 _allMNISTImages[i] = new Matrix<double>(numRows * numCols, 1); // 784x1 matrix
                 for (var j = 0; j < _allMNISTImages[i].Rows; j++)
                     _allMNISTImages[i][j, 0] = pixels[j] / 255.0; // normalize and save image
-                
             }
 
             // Read and store MNIST Labels as one-hot vector
@@ -314,15 +302,31 @@ namespace NumberRecognizer
         {
             // Update hidden layer weights 
             _weights1 = GradientDifference(_weights1, hWG);
-            
+
             // Update hidden layer biases 
             _biases1 = GradientDifference(_biases1, hBG);
 
             // Update output layer weights 
             _weights2 = GradientDifference(_weights2, oWG);
-            
+
             // Update hidden layer biases 
             _biases2 = GradientDifference(_biases2, oBG);
+        }
+
+        private int FinalGuess()
+        {
+            int maxIndex = 0;
+            double maxValue = double.MinValue;
+            for (var i = 0; i < _outputLayerA2.Rows; i++)
+            {
+                if (_outputLayerA2[i, 0] > maxValue)
+                {
+                    maxValue = _outputLayerA2[i, 0];
+                    maxIndex = i;
+                }
+            }
+
+            return maxIndex;
         }
 
         /// <summary>
@@ -441,7 +445,7 @@ namespace NumberRecognizer
             {
                 for (int j = i; j < i + 28; j++)
                 {
-                    var pixel = _pixels[j,0];
+                    var pixel = _pixels[j, 0];
                     Console.BackgroundColor = pixel < 1.0 ? ConsoleColor.Gray : ConsoleColor.Black;
                     Console.Write($"{pixel:F2} ");
                 }
