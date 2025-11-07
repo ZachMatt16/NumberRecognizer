@@ -52,32 +52,38 @@ namespace NumberRecognizer
 
             // Get Normalized Pixel Vector
             var drawnImageMatrix = GetPixelMatrix();
-            //PrintPixels();
+            //PrintPixels(drawnImageMatrix);
 
             // Forward Propagate (Make guess)
             var output = ForwardPropagation(drawnImageMatrix);
-            PrintOutputLayer();
+            //PrintOutputLayer();
 
             return FinalGuess(output);
         }
 
-        public void TrainModel(int label)
+        public int TrainModel(int label)
         {
             Console.Write("Original ");
             PrintOutputLayer();
 
             var oneHot = new Matrix<double>(10, 1);
-            for (int i = 0; i < label; i++)
-                oneHot[i, 0] = 0;
             oneHot[label, 0] = 1;
-            for (int i = label + 1; i < oneHot.Rows; i++)
-                oneHot[i, 0] = 0;
 
             // Backward propagation (Train weights)
             TrainWeights(_pixels, oneHot);
 
+            // Forward Prop again to recalculate outputs
+            var output = ForwardPropagation(_pixels);
             Console.Write("New ");
             PrintOutputLayer();
+
+            Console.WriteLine();
+            Console.WriteLine();
+            Console.WriteLine();
+            Console.WriteLine();
+            Console.WriteLine();
+
+            return FinalGuess(output);
         }
 
         /// <summary>
@@ -90,7 +96,7 @@ namespace NumberRecognizer
 
             // Read and store MNIST dataset
             ReadMNIST(_numOfMNISTImages);
-            //SaveMNISTImageAsPNG();
+            SaveMNISTImageAsPNG();
 
             for (int i = 0; i < _numOfMNISTImages; i++)
             {
@@ -100,7 +106,7 @@ namespace NumberRecognizer
                 // Backward propagation (Train weights)
                 TrainWeights(_allMNISTImages[i], _allMNISTLabels[i]);
 
-                if (i % 25 == 0)
+                if (i % 100 == 0)
                 {
                     var label = FinalGuess(_allMNISTLabels[i]);
                     var guess = FinalGuess(output);
@@ -135,11 +141,11 @@ namespace NumberRecognizer
         {
             using var imageReader =
                 new BinaryReader(File.OpenRead(
-                    @"C:\Users\zachs\RiderProjects\NumberRecognizer\MNIST Dataset\t10k-images.idx3-ubyte"));
+                    @"C:\Users\zachs\RiderProjects\NumberRecognizer\MNIST Dataset\train-images.idx3-ubyte"));
 
             using var labelReader =
                 new BinaryReader(File.OpenRead(
-                    @"C:\Users\zachs\RiderProjects\NumberRecognizer\MNIST Dataset\t10k-labels.idx1-ubyte"));
+                    @"C:\Users\zachs\RiderProjects\NumberRecognizer\MNIST Dataset\train-labels.idx1-ubyte"));
 
             // read magic number, number of images and num of rows and columns for image and label
             ReadBigInt32(imageReader); // magic number
@@ -167,18 +173,14 @@ namespace NumberRecognizer
                     _allMNISTImages[i][j, 0] = pixels[j] / 255.0; // normalize and save image
             }
 
+
             // Read and store MNIST Labels as one-hot vector
             // [0, 0, 0, 0, 1, 0, 0, 0, 0, 0] if the label is 5
             _allMNISTLabels = new List<Matrix<double>>(numLabels);
             for (var i = 0; i < iterations; i++)
             {
                 _allMNISTLabels.Add(new Matrix<double>(10, 1)); // number of digits is 10
-                var index = labelReader.ReadByte();
-                for (var j = 0; j < index; j++)
-                    _allMNISTLabels[i][j, 0] = 0;
-                _allMNISTLabels[i][index, 0] = 1;
-                for (var j = index + 1; j < 10; j++)
-                    _allMNISTLabels[i][j, 0] = 0;
+                _allMNISTLabels[i][labelReader.ReadByte(), 0] = 1;
             }
         }
 
@@ -188,21 +190,76 @@ namespace NumberRecognizer
         /// <returns> The pixel matrix from the drawn image. </returns>
         private Matrix<double> GetPixelMatrix()
         {
-            // image dimensions and grayscale factors
             const int width = 28;
             const int height = 28;
-            const double rScale = .299;
-            const double gScale = 0.587;
-            const double bScale = .114;
+            const double RScale = 0.299;
+            const double GScale = 0.587;
+            const double BScale = 0.114;
 
-            // create a pixel span to hold the pixel data
             using var image = Image.Load<Rgba32>(_filename);
-            Span<Rgba32> pixelSpan = new Rgba32[width * height];
-            image.CopyPixelDataTo(pixelSpan);
 
-            // normalize and grayscale the pixels
-            for (var i = 0; i < pixelSpan.Length; i++)
-                _pixels[i, 0] = (pixelSpan[i].R * rScale + pixelSpan[i].G * gScale + pixelSpan[i].B * bScale) / 255;
+            // Convert to grayscale
+            var gray = new Matrix<double>(image.Height, image.Width); 
+            for (int row = 0; row < image.Height; row++)
+            {
+                for (int col = 0; col < image.Width; col++)
+                {
+                    var px = image[col, row]; // col = x, row = y
+                    gray[row, col] = (px.R * RScale + px.G * GScale + px.B * BScale) / 255.0;
+                }
+            }
+
+            // Find bounding box of the digit (non-zero pixels)
+            int minX = image.Width - 1;
+            int minY = image.Height - 1;
+            int maxX = 0;
+            int maxY = 0;
+
+            for (int row = 0; row < gray.Rows; row++)
+            {
+                for (int col = 0; col < gray.Cols; col++)
+                {
+                    if (gray[row, col] > 0.01) // threshold for non-background
+                    {
+                        if (col < minX) minX = col;
+                        if (row < minY) minY = row;
+                        if (col > maxX) maxX = col;
+                        if (row > maxY) maxY = row;
+                    }
+                }
+            }
+
+            int boxWidth = maxX - minX + 1;
+            int boxHeight = maxY - minY + 1;
+
+            // Resize and center digit into 28x28 frame
+            float scale = Math.Min((float)width / boxWidth, (float)height / boxHeight);
+            int newWidth = (int)(boxWidth * scale);
+            int newHeight = (int)(boxHeight * scale);
+
+            var canvas = new Matrix<double>(height, width); 
+            int offsetX = (width - newWidth) / 2;
+            int offsetY = (height - newHeight) / 2;
+
+            // Resample pixels (nearest neighbor)
+            for (int y = 0; y < newHeight; y++)
+            {
+                for (int x = 0; x < newWidth; x++)
+                {
+                    int srcX = minX + (int)(x / scale);
+                    int srcY = minY + (int)(y / scale);
+                    canvas[y + offsetY, x + offsetX] = gray[srcY, srcX]; // row = y, col = x
+                }
+            }
+
+            // Flatten into 784x1 matrix
+            for (int row = 0; row < height; row++)
+            {
+                for (int col = 0; col < width; col++)
+                {
+                    _pixels[row * width + col, 0] = canvas[row, col];
+                }
+            }
 
             return _pixels;
         }
@@ -254,12 +311,13 @@ namespace NumberRecognizer
                 Matrix<double>.MatrixMultiplication(_weights2, _hiddenLayerA1), _biases2); // 10x1 matrix
 
             // Softmax activation 
-            double exponentiatedOutputSum = 0;
+            double maxZ = _preActivationOutputLayerZ2.Max();
+            double exponentiatedSum = 0;
             for (int i = 0; i < _preActivationOutputLayerZ2.Rows; i++)
-                exponentiatedOutputSum += Math.Exp(_preActivationOutputLayerZ2[i, 0]);
+                exponentiatedSum += Math.Exp(_preActivationOutputLayerZ2[i, 0] - maxZ);
             for (var i = 0; i < _preActivationOutputLayerZ2.Rows; i++)
                 _outputLayerA2[i, 0] =
-                    Math.Exp(_preActivationOutputLayerZ2[i, 0]) / exponentiatedOutputSum; // 10x1 matrix
+                    Math.Exp(_preActivationOutputLayerZ2[i, 0] - maxZ) / exponentiatedSum; // 10x1 matrix
 
             return _outputLayerA2;
         }
@@ -373,7 +431,7 @@ namespace NumberRecognizer
             // Update output layer weights 
             _weights2 = GradientDifference(_weights2, oWG);
 
-            // Update hidden layer biases 
+            // Update output layer biases 
             _biases2 = GradientDifference(_biases2, oBG);
         }
 
@@ -506,18 +564,18 @@ namespace NumberRecognizer
         /// <summary>
         ///  Prints the drawn image's pixels.
         /// </summary>
-        private void PrintPixels()
+        private void PrintPixels(Matrix<double> matrix)
         {
             // print the length of the pixel vector
-            Console.WriteLine("Length: " + _pixels.Rows);
+            Console.WriteLine("Length: " + matrix.Rows);
             Console.WriteLine();
 
-            for (int i = 0; i < _pixels.Rows; i += 28)
+            for (int i = 0; i < matrix.Rows; i += 28)
             {
                 for (int j = i; j < i + 28; j++)
                 {
-                    var pixel = _pixels[j, 0];
-                    Console.BackgroundColor = pixel < 1.0 ? ConsoleColor.Gray : ConsoleColor.Black;
+                    var pixel = matrix[j, 0];
+                    Console.BackgroundColor = pixel > 0 ? ConsoleColor.Gray : ConsoleColor.Black;
                     Console.Write($"{pixel:F2} ");
                 }
 

@@ -164,52 +164,52 @@ namespace WPF
 
         private void Click_0(object sender, RoutedEventArgs e)
         {
-            nr.TrainModel(0);
+            FinalNumber.Text = "" + nr.TrainModel(0);
         }
 
         private void Click_1(object sender, RoutedEventArgs e)
         {
-            nr.TrainModel(1);
+            FinalNumber.Text = "" + nr.TrainModel(1);
         }
 
         private void Click_2(object sender, RoutedEventArgs e)
         {
-            nr.TrainModel(2);
+            FinalNumber.Text = "" + nr.TrainModel(2);
         }
 
         private void Click_3(object sender, RoutedEventArgs e)
         {
-            nr.TrainModel(3);
+            FinalNumber.Text = "" + nr.TrainModel(3);
         }
 
         private void Click_4(object sender, RoutedEventArgs e)
         {
-            nr.TrainModel(4);
+            FinalNumber.Text = "" + nr.TrainModel(4);
         }
 
         private void Click_5(object sender, RoutedEventArgs e)
         {
-            nr.TrainModel(5);
+            FinalNumber.Text = "" + nr.TrainModel(5);
         }
 
         private void Click_6(object sender, RoutedEventArgs e)
         {
-            nr.TrainModel(6);
+            FinalNumber.Text = "" + nr.TrainModel(6);
         }
 
         private void Click_7(object sender, RoutedEventArgs e)
         {
-            nr.TrainModel(7);
+            FinalNumber.Text = "" + nr.TrainModel(7);
         }
 
         private void Click_8(object sender, RoutedEventArgs e)
         {
-            nr.TrainModel(8);
+            FinalNumber.Text = "" + nr.TrainModel(8);
         }
 
         private void Click_9(object sender, RoutedEventArgs e)
         {
-            nr.TrainModel(9);
+            FinalNumber.Text = "" + nr.TrainModel(9);
         }
     }
 }

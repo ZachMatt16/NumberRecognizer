@@ -27,7 +27,7 @@
         <Button x:Name="NumberRecognizer" Content="What number &#xD;&#xA;is this?" HorizontalAlignment="Left" Margin="10,66,0,0" VerticalAlignment="Top" Height="32" Width="75" Click="NumberRecognizer_Click" Grid.Column="1" FontSize="9" FontWeight="Bold"/>
         <TextBox x:Name="FinalNumber" HorizontalAlignment="Left" Margin="93,72,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="40" Height="20" FontSize="10" BorderThickness="1,1,1,1" Grid.Column="1" />
         <Button x:Name="Train" Content="Train model" HorizontalAlignment="Left" Margin="8,179,0,0" VerticalAlignment="Top" Height="32" Width="75" Grid.Column="1" Click="Train_Click" FontWeight="Bold"/>
-        <TextBox x:Name="Train_Iterations" HorizontalAlignment="Left" Margin="93,185,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="40" Height="20" FontSize="12" BorderThickness="1,1,1,1" Grid.Column="1" Text="0" AutomationProperties.ItemType="" />
+        <TextBox x:Name="Train_Iterations" HorizontalAlignment="Left" Margin="93,185,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="40" Height="20" FontSize="12" BorderThickness="1,1,1,1" Grid.Column="1" Text="10000" AutomationProperties.ItemType="" />
         <Button Grid.Column="1" Content="0" HorizontalAlignment="Left" Margin="8,116,0,0" VerticalAlignment="Top" Height="20" Width="20" Click="Click_0"/>
         <Button Grid.Column="1" Content="1" HorizontalAlignment="Left" Margin="33,116,0,0" VerticalAlignment="Top" Height="20" Width="20" Click="Click_1"/>
         <Button Grid.Column="1" Content="2" HorizontalAlignment="Left" Margin="58,116,0,0" VerticalAlignment="Top" Height="20" Width="20" Click="Click_2"/>
