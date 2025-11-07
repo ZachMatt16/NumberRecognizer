@@ -27,7 +27,7 @@ namespace NumberRecognizer
         private List<Matrix<double>> _allMNISTLabels; // List of 10x1 matrices
 
         private const int NumOfMNISTImages = 2;
-        private const int LearningLevel = .01;
+        private const double LearningLevel = .01;
 
         private readonly string _filename;
 
@@ -40,7 +40,7 @@ namespace NumberRecognizer
         {
             // Read and store MNIST dataset
             ReadMNIST(NumOfMNISTImages);
-            //SaveMNISTImageAsPNG();
+            SaveMNISTImageAsPNG();
 
             // Get Normalized Pixel Vector
             GetPixelMatrix();
@@ -113,6 +113,7 @@ namespace NumberRecognizer
                 _allMNISTImages[i] = new Matrix<double>(numRows * numCols, 1); // 784x1 matrix
                 for (var j = 0; j < _allMNISTImages[i].Rows; j++)
                     _allMNISTImages[i][j, 0] = pixels[j] / 255.0; // normalize and save image
+                
             }
 
             // Read and store MNIST Labels as one-hot vector
@@ -367,7 +368,9 @@ namespace NumberRecognizer
             return BitConverter.ToInt32(bytes, 0);
         }
 
-        //TODO: xml
+        /// <summary>
+        ///  Saves all the stored MNIST images as PNGs with their labels.
+        /// </summary>
         private void SaveMNISTImageAsPNG()
         {
             int width = 28;
@@ -375,23 +378,22 @@ namespace NumberRecognizer
 
             using var image = new Image<L8>(width, height); // L8 = 8-bit grayscale
 
-            for (int i = 0; i < NumOfMNISTImages; i++)
+            for (var i = 0; i < NumOfMNISTImages; i++)
             {
-                for (int y = 0; y < height; y++)
+                for (var y = 0; y < height; y++)
                 {
-                    for (int x = 0; x < width; x++)
+                    for (var x = 0; x < width; x++)
                     {
-                        double value = _allMNISTImages[i][y * width + x];
+                        double value = _allMNISTImages[i][y * width + x, 0];
                         byte gray = (byte)(value * 255); // convert 0–1 to 0–255
                         image[x, y] = new L8(gray);
                     }
                 }
 
-                int label = 0;
-                for (int j = 0; j < _allMNISTLabels[i].Length; j++)
-                    if (_allMNISTLabels[i][j] == 1)
+                var label = 0;
+                for (var j = 0; j < _allMNISTLabels[i].Rows; j++)
+                    if (_allMNISTLabels[i][j, 0] >= 1)
                         label = j;
-
 
                 // Save as PNG
                 image.Save(
@@ -399,14 +401,18 @@ namespace NumberRecognizer
             }
         }
 
-        //TODO: xml
+        /// <summary>
+        ///  Prints the output layer matrix to the console.
+        /// </summary>
         private void PrintOutputLayer()
         {
             Console.WriteLine("Output layer: ");
             PrintMatrix(_outputLayerA2);
         }
 
-        //TODO: xml
+        /// <summary>
+        ///  Prints all the weight and bias matrices to the console.
+        /// </summary>
         private void PrintWeights()
         {
             Console.WriteLine("Weights for hidden layer: ");
@@ -422,18 +428,20 @@ namespace NumberRecognizer
             PrintMatrix(_biases2);
         }
 
-        // TODO: XML
+        /// <summary>
+        ///  Prints the drawn image's pixels.
+        /// </summary>
         private void PrintPixels()
         {
             // print the length of the pixel vector
-            Console.WriteLine("Length: " + _pixels.Length);
+            Console.WriteLine("Length: " + _pixels.Rows);
             Console.WriteLine();
 
-            for (int i = 0; i < _pixels.Length; i += 28)
+            for (int i = 0; i < _pixels.Rows; i += 28)
             {
                 for (int j = i; j < i + 28; j++)
                 {
-                    var pixel = _pixels[j];
+                    var pixel = _pixels[j,0];
                     Console.BackgroundColor = pixel < 1.0 ? ConsoleColor.Gray : ConsoleColor.Black;
                     Console.Write($"{pixel:F2} ");
                 }
