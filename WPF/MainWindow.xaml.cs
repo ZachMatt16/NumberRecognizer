@@ -154,5 +154,10 @@ namespace WPF
             FinalNumber.Text = "This number is a " + num;
             // implement NumberRecognizer call here
         }
+
+        private void Train_Click(object sender, RoutedEventArgs e)
+        {
+            var nr = new SimpleNumberRecognizer(_localFileName);
+        }
     }
 }

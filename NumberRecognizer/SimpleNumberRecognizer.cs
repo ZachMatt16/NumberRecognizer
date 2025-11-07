@@ -26,7 +26,7 @@ namespace NumberRecognizer
         private List<Matrix<double>> _allMNISTImages; // List of 784x1 matrices
         private List<Matrix<double>> _allMNISTLabels; // List of 10x1 matrices
 
-        private const int NumOfMNISTImages = 1;
+        private int _numOfMNISTImages = 1;
         private const double LearningLevel = .01;
 
         private readonly string _filename;
@@ -34,36 +34,46 @@ namespace NumberRecognizer
         public SimpleNumberRecognizer(string filename)
         {
             _filename = filename;
+            // Initialize random weights and biases (W1: 784 x 64, b1: 64x1, W2: 64x10, b2: 10x1)
+            InitializeWeightsAndBiases();
         }
 
         public int PredictNumber()
         {
-            // Read and store MNIST dataset
-            ReadMNIST(NumOfMNISTImages);
-            SaveMNISTImageAsPNG();
-
+            //PrintWeights();
+            
             // Get Normalized Pixel Vector
             var drawnImageMatrix = GetPixelMatrix();
-            PrintPixels();
+            //PrintPixels();
 
-            // Initialize random weights and biases (W1: 784 x 64, b1: 64x1, W2: 64x10, b2: 10x1)
-            InitializeWeightsAndBiases();
-            //PrintWeights();
+            // Forward Propagate (Make guess)
+            var output = ForwardPropagation(drawnImageMatrix);
+            //PrintOutputLayer();
 
-            ForwardPropagation(drawnImageMatrix);
-            PrintOutputLayer();
+            return FinalGuess(output);
+        }
+
+        public void TrainModel(int iterations)
+        {
+            _numOfMNISTImages = iterations;
+            // Read and store MNIST dataset
+            ReadMNIST(_numOfMNISTImages);
+            SaveMNISTImageAsPNG();
             
-            // for (int i = 0; i < NumOfMNISTImages; i++)
-            // {
-            //     // Feed forward / Matrix multiplication (Compute initial predictions)
-            //     ForwardPropagation(_allMNISTImages[i]);
-            //     //PrintMatrix(matrix);
-            //
-            //     // Backward propagation (Train weights)
-            //     //TrainWeights(_allMNISTImages[i], _allMNISTLabels[i]);
-            // }
-
-            return FinalGuess();
+            for (int i = 0; i < _numOfMNISTImages; i++)
+            {
+                // Feed forward (Compute initial predictions)
+                var output = ForwardPropagation(_allMNISTImages[i]);
+            
+                // Backward propagation (Train weights)
+                TrainWeights(_allMNISTImages[i], _allMNISTLabels[i]);
+                
+                var label = FinalGuess(_allMNISTLabels[i]);
+                var guess = FinalGuess(output);
+                Console.WriteLine($"Correct answer: {label}. Guess: {guess}");
+                PrintOutputLayer();
+            }
+            
         }
 
         /// <summary>
@@ -231,7 +241,7 @@ namespace NumberRecognizer
         /// <summary>
         ///  Calculates and returns the error from the output layer.
         /// </summary>
-        /// <param name="mnistIndex"> The index of the one-hot label matrix. </param>
+        /// <param name="labelMatrix"> The one-hot label matrix. </param>
         /// <returns> A matrix representing the error of the output layer. </returns>
         private Matrix<double> CalculateOutputLayerError(Matrix<double> labelMatrix)
         {
@@ -279,7 +289,7 @@ namespace NumberRecognizer
         /// Calculates and returns the gradients for the hidden layer weights and biases.
         /// </summary>
         /// <param name="d1"> The hidden layer error. </param>
-        /// <param name="mnistIndex"> The index of the image matrix.</param>
+        /// <param name="imageMatrix"> The image matrix. </param>
         /// <returns> The gradients for the hidden layer weights and biases. </returns>
         private (Matrix<double>, Matrix<double>) CalculateHiddenLayerGradient(Matrix<double> d1,
             Matrix<double> imageMatrix)
@@ -316,15 +326,15 @@ namespace NumberRecognizer
             _biases2 = GradientDifference(_biases2, oBG);
         }
 
-        private int FinalGuess()
+        private int FinalGuess(Matrix<double> matrix)
         {
             int maxIndex = 0;
             double maxValue = double.MinValue;
-            for (var i = 0; i < _outputLayerA2.Rows; i++)
+            for (var i = 0; i < matrix.Rows; i++)
             {
-                if (_outputLayerA2[i, 0] > maxValue)
+                if (matrix[i, 0] > maxValue)
                 {
-                    maxValue = _outputLayerA2[i, 0];
+                    maxValue = matrix[i, 0];
                     maxIndex = i;
                 }
             }
@@ -385,7 +395,7 @@ namespace NumberRecognizer
 
             using var image = new Image<L8>(width, height); // L8 = 8-bit grayscale
 
-            for (var i = 0; i < NumOfMNISTImages; i++)
+            for (var i = 0; i < _numOfMNISTImages; i++)
             {
                 for (var y = 0; y < height; y++)
                 {
