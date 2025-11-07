@@ -96,7 +96,7 @@ namespace NumberRecognizer
 
             // Read and store MNIST dataset
             ReadMNIST(_numOfMNISTImages);
-            SaveMNISTImageAsPNG();
+            //SaveMNISTImageAsPNG();
 
             for (int i = 0; i < _numOfMNISTImages; i++)
             {
