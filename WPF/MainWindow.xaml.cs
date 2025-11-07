@@ -34,14 +34,15 @@ namespace WPF
         /// Field to store the previous point for drawing lines
         /// </summary>
         private Point _previousPoint;
-        
+
         /// <summary>
         ///  File path of the image
         /// </summary>
         private string _localFileName = "C:\\Users\\zachs\\RiderProjects\\NumberRecognizer\\Numbers\\CurrentNumber.png";
-        
-        private SimpleNumberRecognizer nr = new SimpleNumberRecognizer("C:\\Users\\zachs\\RiderProjects\\NumberRecognizer\\Numbers\\CurrentNumber.png");
-        
+
+        private SimpleNumberRecognizer nr =
+            new SimpleNumberRecognizer("C:\\Users\\zachs\\RiderProjects\\NumberRecognizer\\Numbers\\CurrentNumber.png");
+
         public MainWindow()
         {
             InitializeComponent();
@@ -92,7 +93,7 @@ namespace WPF
                 Width = radius,
                 Height = radius
             };
-            
+
             // make circle black if drawing
             if (_isDrawing)
                 circle.Fill = new SolidColorBrush(Colors.White);
@@ -108,7 +109,7 @@ namespace WPF
             // Center the circle where the mouse is
             Canvas.SetLeft(circle, currentPoint.X - circle.Width / 2);
             Canvas.SetTop(circle, currentPoint.Y - circle.Height / 2);
-            
+
             // draw it on the canvas
             Canvas.Children.Add(circle);
         }
@@ -152,13 +153,63 @@ namespace WPF
         private void NumberRecognizer_Click(object sender, RoutedEventArgs e)
         {
             SaveFile();
-            FinalNumber.Text = "This number is a " + nr.PredictNumber();;
+            FinalNumber.Text = "" + nr.PredictNumber();
         }
 
         private void Train_Click(object sender, RoutedEventArgs e)
         {
             int.TryParse(Train_Iterations.Text, out int iterations);
-            nr.TrainModel(iterations);
+            nr.TrainModelWithMNIST(iterations);
+        }
+
+        private void Click_0(object sender, RoutedEventArgs e)
+        {
+            nr.TrainModel(0);
+        }
+
+        private void Click_1(object sender, RoutedEventArgs e)
+        {
+            nr.TrainModel(1);
+        }
+
+        private void Click_2(object sender, RoutedEventArgs e)
+        {
+            nr.TrainModel(2);
+        }
+
+        private void Click_3(object sender, RoutedEventArgs e)
+        {
+            nr.TrainModel(3);
+        }
+
+        private void Click_4(object sender, RoutedEventArgs e)
+        {
+            nr.TrainModel(4);
+        }
+
+        private void Click_5(object sender, RoutedEventArgs e)
+        {
+            nr.TrainModel(5);
+        }
+
+        private void Click_6(object sender, RoutedEventArgs e)
+        {
+            nr.TrainModel(6);
+        }
+
+        private void Click_7(object sender, RoutedEventArgs e)
+        {
+            nr.TrainModel(7);
+        }
+
+        private void Click_8(object sender, RoutedEventArgs e)
+        {
+            nr.TrainModel(8);
+        }
+
+        private void Click_9(object sender, RoutedEventArgs e)
+        {
+            nr.TrainModel(9);
         }
     }
 }

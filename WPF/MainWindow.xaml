@@ -6,35 +6,37 @@
         xmlns:local="clr-namespace:WPF"
         mc:Ignorable="d"
         Title="MainWindow" Height="300
-        " Width="400">
-    <Grid x:Name="Grid" Height="280" Width="400" >
+        " Width="474">
+    <Grid x:Name="Grid" Height="280" Margin="0,2,0,2" >
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="280"/>
             <ColumnDefinition Width="280"/>
         </Grid.ColumnDefinitions>
         <Canvas x:Name="Canvas" Background="Black" Margin="0,0,0,0" Cursor="Arrow" MouseDown="Canvas_MouseDown"
                 MouseUp="Canvas_MouseUp" MouseMove="Canvas_MouseMove" Width="280" Height="280" />
-        <TextBlock HorizontalAlignment="Left" Margin="19,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top"
+        <TextBlock HorizontalAlignment="Left" Margin="10,7,0,0" TextWrapping="Wrap" VerticalAlignment="Top"
                    FontSize="15" Width="75" Height="18" Text="Brush Size:" Grid.Column="1"/>
-        <Button x:Name="Save_File_Button" Content="Save File" HorizontalAlignment="Left" Margin="19,78,0,0"
-                VerticalAlignment="Top" Height="33" Width="75" Click="Handle_Save_Click" FontSize="15" Grid.Column="1" >
+        <Button x:Name="Save_File_Button" Content="Save File" HorizontalAlignment="Left" Margin="140,10,0,0"
+                VerticalAlignment="Top" Height="41" Width="41" Click="Handle_Save_Click" FontSize="9" Grid.Column="1" FontWeight="Bold" >
             <Button.Effect>
                 <DropShadowEffect/>
             </Button.Effect>
         </Button>
-        <Slider x:Name="slider" Minimum="0" Maximum="50" Value="25" TickFrequency="1" IsSnapToTickEnabled="True" Margin="24,54,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Height="16" Width="65" Grid.Column="1"/>
-        <TextBox x:Name="Radius" Text="{Binding Value, ElementName=slider, Mode=TwoWay}" Width="41" Margin="36,32,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" RenderTransformOrigin="0.526,0.815" Height="14" Grid.Column="1"/>
-        <Button x:Name="NumberRecognizer" Content="What number &#xD;&#xA;is this?" HorizontalAlignment="Left" Margin="19,150,0,0" VerticalAlignment="Top" Height="32" Width="75" Click="NumberRecognizer_Click" Grid.Column="1" FontSize="8">
-            <Button.Effect>
-                <DropShadowEffect/>
-            </Button.Effect>
-        </Button>
-        <TextBox x:Name="FinalNumber" HorizontalAlignment="Left" Margin="19,120,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="75" Height="26" FontSize="10" BorderThickness="1,1,1,1" Grid.Column="1" />
-        <Button x:Name="Train" Content="Train model X times" HorizontalAlignment="Left" Margin="19,229,0,0" VerticalAlignment="Top" Height="32" Width="75" Grid.Column="1" FontSize="8" Click="Train_Click">
-            <Button.Effect>
-                <DropShadowEffect/>
-            </Button.Effect>
-        </Button>
-        <TextBox x:Name="Train_Iterations" HorizontalAlignment="Left" Margin="19,198,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="75" Height="26" FontSize="12" BorderThickness="1,1,1,1" Grid.Column="1" />
+        <Slider x:Name="slider" Minimum="0" Maximum="50" Value="25" TickFrequency="1" IsSnapToTickEnabled="True" Margin="16,32,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Height="21" Width="114" Grid.Column="1"/>
+        <TextBox x:Name="Radius" Text="{Binding Value, ElementName=slider, Mode=TwoWay}" Width="40" Margin="90,8,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" RenderTransformOrigin="0.526,0.815" Height="19" Grid.Column="1"/>
+        <Button x:Name="NumberRecognizer" Content="What number &#xD;&#xA;is this?" HorizontalAlignment="Left" Margin="10,66,0,0" VerticalAlignment="Top" Height="32" Width="75" Click="NumberRecognizer_Click" Grid.Column="1" FontSize="9" FontWeight="Bold"/>
+        <TextBox x:Name="FinalNumber" HorizontalAlignment="Left" Margin="93,72,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="40" Height="20" FontSize="10" BorderThickness="1,1,1,1" Grid.Column="1" />
+        <Button x:Name="Train" Content="Train model" HorizontalAlignment="Left" Margin="8,179,0,0" VerticalAlignment="Top" Height="32" Width="75" Grid.Column="1" Click="Train_Click" FontWeight="Bold"/>
+        <TextBox x:Name="Train_Iterations" HorizontalAlignment="Left" Margin="93,185,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="40" Height="20" FontSize="12" BorderThickness="1,1,1,1" Grid.Column="1" Text="0" AutomationProperties.ItemType="" />
+        <Button Grid.Column="1" Content="0" HorizontalAlignment="Left" Margin="8,116,0,0" VerticalAlignment="Top" Height="20" Width="20" Click="Click_0"/>
+        <Button Grid.Column="1" Content="1" HorizontalAlignment="Left" Margin="33,116,0,0" VerticalAlignment="Top" Height="20" Width="20" Click="Click_1"/>
+        <Button Grid.Column="1" Content="2" HorizontalAlignment="Left" Margin="58,116,0,0" VerticalAlignment="Top" Height="20" Width="20" Click="Click_2"/>
+        <Button Grid.Column="1" Content="3" HorizontalAlignment="Left" Margin="83,116,0,0" VerticalAlignment="Top" Height="20" Width="20" Click="Click_3"/>
+        <Button Grid.Column="1" Content="4" HorizontalAlignment="Left" Margin="108,116,0,0" VerticalAlignment="Top" Height="20" Width="20" Click="Click_4"/>
+        <Button Grid.Column="1" Content="5" HorizontalAlignment="Left" Margin="8,140,0,0" VerticalAlignment="Top" Height="20" Width="20" Click="Click_5"/>
+        <Button Grid.Column="1" Content="6" HorizontalAlignment="Left" Margin="33,140,0,0" VerticalAlignment="Top" Height="20" Width="20" Click="Click_6"/>
+        <Button Grid.Column="1" Content="7" HorizontalAlignment="Left" Margin="58,140,0,0" VerticalAlignment="Top" Height="20" Width="20" Click="Click_7"/>
+        <Button Grid.Column="1" Content="8" HorizontalAlignment="Left" Margin="83,140,0,0" VerticalAlignment="Top" Height="20" Width="20" Click="Click_8"/>
+        <Button Grid.Column="1" Content="9" HorizontalAlignment="Left" Margin="108,140,0,0" VerticalAlignment="Top" Height="20" Width="20" Click="Click_9"/>
     </Grid>
 </Window>

@@ -61,13 +61,33 @@ namespace NumberRecognizer
             return FinalGuess(output);
         }
 
+        public void TrainModel(int label)
+        {
+            Console.Write("Original ");
+            PrintOutputLayer();
+
+            var oneHot = new Matrix<double>(10, 1);
+            for (int i = 0; i < label; i++)
+                oneHot[i, 0] = 0;
+            oneHot[label, 0] = 1;
+            for (int i = label + 1; i < oneHot.Rows; i++)
+                oneHot[i, 0] = 0;
+
+            // Backward propagation (Train weights)
+            TrainWeights(_pixels, oneHot);
+
+            Console.Write("New ");
+            PrintOutputLayer();
+        }
+
         /// <summary>
         ///  Trains the model on iteration MNIST images from the MNIST dataset.
         /// </summary>
         /// <param name="iterations"> The number of images to train the model on </param>
-        public void TrainModel(int iterations)
+        public void TrainModelWithMNIST(int iterations)
         {
             _numOfMNISTImages = iterations;
+
             // Read and store MNIST dataset
             ReadMNIST(_numOfMNISTImages);
             //SaveMNISTImageAsPNG();
@@ -458,7 +478,7 @@ namespace NumberRecognizer
             for (int i = 0; i < _outputLayerA2.Rows; i++)
             {
                 for (int j = 0; j < _outputLayerA2.Cols; j++)
-                    Console.Write($"{i} -- {_outputLayerA2[i, j]:F3} ");
+                    Console.Write($"{i} -- {_outputLayerA2[i, j]:F6} ");
                 Console.WriteLine();
             }
 
