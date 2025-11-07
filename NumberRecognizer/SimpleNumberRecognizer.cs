@@ -106,30 +106,9 @@ namespace NumberRecognizer
                 // Backward propagation (Train weights)
                 TrainWeights(_allMNISTImages[i], _allMNISTLabels[i]);
 
-                if (i % 100 == 0)
-                {
-                    var label = FinalGuess(_allMNISTLabels[i]);
-                    var guess = FinalGuess(output);
-                    Console.Write($"Image: {i} Correct answer: {label} Guess: {guess} ");
+                // Print the guess every 1000 times 
+                PrintMNISTGuess(i, output);
 
-                    if (guess == label)
-                    {
-                        Console.BackgroundColor = ConsoleColor.Green;
-                        Console.ForegroundColor = ConsoleColor.White;
-                        Console.Write(" CORRECT!");
-                        Console.ResetColor();
-                    }
-                    else
-                    {
-                        Console.BackgroundColor = ConsoleColor.Red;
-                        Console.ForegroundColor = ConsoleColor.White;
-                        Console.Write(" INCORRECT!");
-                        Console.ResetColor();
-                    }
-
-                    Console.ResetColor();
-                    Console.WriteLine();
-                }
             }
         }
 
@@ -199,7 +178,7 @@ namespace NumberRecognizer
             using var image = Image.Load<Rgba32>(_filename);
 
             // Convert to grayscale
-            var gray = new Matrix<double>(image.Height, image.Width); 
+            var gray = new Matrix<double>(image.Height, image.Width);
             for (int row = 0; row < image.Height; row++)
             {
                 for (int col = 0; col < image.Width; col++)
@@ -237,7 +216,7 @@ namespace NumberRecognizer
             int newWidth = (int)(boxWidth * scale);
             int newHeight = (int)(boxHeight * scale);
 
-            var canvas = new Matrix<double>(height, width); 
+            var canvas = new Matrix<double>(height, width);
             int offsetX = (width - newWidth) / 2;
             int offsetY = (height - newHeight) / 2;
 
@@ -595,6 +574,34 @@ namespace NumberRecognizer
             }
 
             Console.WriteLine();
+        }
+
+        private void PrintMNISTGuess(int i, Matrix<double> output)
+        {
+            if (i % 1000 == 0)
+            {
+                var label = FinalGuess(_allMNISTLabels[i]);
+                var guess = FinalGuess(output);
+                Console.Write($"Image: {i} Correct answer: {label} Guess: {guess} ");
+
+                if (guess == label)
+                {
+                    Console.BackgroundColor = ConsoleColor.Green;
+                    Console.ForegroundColor = ConsoleColor.White;
+                    Console.Write(" CORRECT!");
+                    Console.ResetColor();
+                }
+                else
+                {
+                    Console.BackgroundColor = ConsoleColor.Red;
+                    Console.ForegroundColor = ConsoleColor.White;
+                    Console.Write(" INCORRECT!");
+                    Console.ResetColor();
+                }
+
+                Console.ResetColor();
+                Console.WriteLine();
+            }
         }
     }
 }

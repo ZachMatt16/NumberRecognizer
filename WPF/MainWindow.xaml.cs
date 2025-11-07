@@ -119,6 +119,11 @@ namespace WPF
             SaveFile();
         }
 
+        private void Handle_Clear_Click(object sender, RoutedEventArgs e)
+        {
+            Canvas.Children.Clear();
+        }
+
         private void SaveFile()
         {
             SaveWindowAsImage(_localFileName);
@@ -159,6 +164,8 @@ namespace WPF
         private void Train_Click(object sender, RoutedEventArgs e)
         {
             int.TryParse(Train_Iterations.Text, out int iterations);
+            if (iterations > 60_000)
+                iterations = 60_000;
             nr.TrainModelWithMNIST(iterations);
         }
 
