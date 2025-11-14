@@ -1,5 +1,7 @@
 ﻿/// <authors> Zach Mattson <authors/>
 
+using System.Text.Json.Serialization;
+
 namespace Matrix;
 
 /// <summary>
@@ -10,7 +12,22 @@ public class Matrix<T> where T : IComparable<T>
     /// <summary>
     ///  Backing 2D array for the Matrix
     /// </summary>
-    private readonly T[][] _backing2DArray;
+    [JsonInclude] [JsonPropertyName("Matrix")]
+    private T[][] _backing2DArray;
+
+    /// <summary>
+    ///  Public property for the number of rows of the matrix.
+    /// </summary>
+    [JsonInclude]
+    [JsonPropertyName("Rows")]
+    public int Rows => _backing2DArray?.Length ?? 0;
+
+    /// <summary>
+    ///  Public property for the number of columns of the matrix.
+    /// </summary>
+    [JsonInclude]
+    [JsonPropertyName("Columns")]
+    public int Cols => _backing2DArray.Length > 0 ? _backing2DArray[0].Length : 0;
 
     /// <summary>
     ///  Constructs a Matrix of size row x col.
@@ -23,6 +40,13 @@ public class Matrix<T> where T : IComparable<T>
         _backing2DArray = new T[row][];
         for (var i = 0; i < row; i++)
             _backing2DArray[i] = new T[col];
+    }
+
+    /// <summary>
+    ///  Parameterless constructor for JSON deserialization.
+    /// </summary>
+    public Matrix()
+    {
     }
 
     /// <summary>
@@ -46,16 +70,6 @@ public class Matrix<T> where T : IComparable<T>
                 _backing2DArray[i][j] = matrix[i, j];
         }
     }
-
-    /// <summary>
-    ///  Public property for the number of rows of the matrix.
-    /// </summary>
-    public int Rows => _backing2DArray.Length;
-
-    /// <summary>
-    ///  Public property for the number of columns of the matrix.
-    /// </summary>
-    public int Cols => _backing2DArray[0].Length;
 
     /// <summary>
     ///  Indexer for the matrix.

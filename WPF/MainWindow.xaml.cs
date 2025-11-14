@@ -1,6 +1,8 @@
 ﻿using System;
+using System.IO;
 using System.Numerics;
 using System.Text;
+using System.Text.Json;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -11,6 +13,7 @@ using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Microsoft.Win32;
 using NumberRecognizer;
 
 namespace WPF
@@ -40,8 +43,9 @@ namespace WPF
         /// </summary>
         private string _localFileName = "C:\\Users\\zachs\\RiderProjects\\NumberRecognizer\\Numbers\\CurrentNumber.png";
 
-        private SimpleNumberRecognizer nr =
-            new SimpleNumberRecognizer("C:\\Users\\zachs\\RiderProjects\\NumberRecognizer\\Numbers\\CurrentNumber.png");
+        private string _weightsFileName;
+
+        private SimpleNumberRecognizer _nr = new();
 
         public MainWindow()
         {
@@ -116,7 +120,43 @@ namespace WPF
 
         private void Handle_Save_Click(object sender, RoutedEventArgs e)
         {
-            SaveFile();
+            try
+            {
+                File.WriteAllText("C:\\Users\\zachs\\OneDrive\\Desktop\\Model.txt", GetJsonStringRepresentation());
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
+
+        /// <summary>
+        ///  Returns the json string representing this spreadsheet.
+        /// </summary>
+        /// <returns> the json string representing this spreadsheet. </returns>
+        public string GetJsonStringRepresentation()
+        {
+            return JsonSerializer.Serialize(_nr, new JsonSerializerOptions { WriteIndented = true });
+        }
+
+        private void Handle_Load_Click(object sender, RoutedEventArgs e)
+        {
+            var openFileDialog = new OpenFileDialog
+            {
+                Title = "Select a file",
+                Filter = "Text Files (*.txt)|*.txt",
+                Multiselect = false
+            };
+            var path = string.Empty;
+            if (openFileDialog.ShowDialog() == true)
+                path = openFileDialog.FileName;
+
+            using (StreamReader reader = new StreamReader(path))
+            {
+                var content = reader.ReadToEnd();
+                var nr = JsonSerializer.Deserialize<SimpleNumberRecognizer>(content);
+                _nr = nr;
+            }
         }
 
         private void Handle_Clear_Click(object sender, RoutedEventArgs e)
@@ -124,12 +164,7 @@ namespace WPF
             Canvas.Children.Clear();
         }
 
-        private void SaveFile()
-        {
-            SaveWindowAsImage(_localFileName);
-        }
-
-        private void SaveWindowAsImage(string filename)
+        private void SaveWindowAsImage()
         {
             // Get the size of the canvas
             double width = Canvas.ActualWidth;
@@ -149,7 +184,7 @@ namespace WPF
             // Encode the RenderTargetBitmap to a PNG file
             var pngEncoder = new PngBitmapEncoder();
             pngEncoder.Frames.Add(BitmapFrame.Create(rtb28));
-            using (var fs = System.IO.File.OpenWrite(filename))
+            using (var fs = System.IO.File.OpenWrite(_localFileName))
             {
                 pngEncoder.Save(fs);
             }
@@ -157,8 +192,8 @@ namespace WPF
 
         private void NumberRecognizer_Click(object sender, RoutedEventArgs e)
         {
-            SaveFile();
-            FinalNumber.Text = "" + nr.PredictNumber();
+            SaveWindowAsImage();
+            FinalNumber.Text = "" + _nr.PredictNumber();
         }
 
         private void Train_Click(object sender, RoutedEventArgs e)
@@ -166,57 +201,57 @@ namespace WPF
             int.TryParse(Train_Iterations.Text, out int iterations);
             if (iterations > 60_000)
                 iterations = 60_000;
-            nr.TrainModelWithMNIST(iterations);
+            _nr.TrainModelWithMNIST(iterations);
         }
 
         private void Click_0(object sender, RoutedEventArgs e)
         {
-            FinalNumber.Text = "" + nr.TrainModel(0);
+            FinalNumber.Text = "" + _nr.TrainModel(0);
         }
 
         private void Click_1(object sender, RoutedEventArgs e)
         {
-            FinalNumber.Text = "" + nr.TrainModel(1);
+            FinalNumber.Text = "" + _nr.TrainModel(1);
         }
 
         private void Click_2(object sender, RoutedEventArgs e)
         {
-            FinalNumber.Text = "" + nr.TrainModel(2);
+            FinalNumber.Text = "" + _nr.TrainModel(2);
         }
 
         private void Click_3(object sender, RoutedEventArgs e)
         {
-            FinalNumber.Text = "" + nr.TrainModel(3);
+            FinalNumber.Text = "" + _nr.TrainModel(3);
         }
 
         private void Click_4(object sender, RoutedEventArgs e)
         {
-            FinalNumber.Text = "" + nr.TrainModel(4);
+            FinalNumber.Text = "" + _nr.TrainModel(4);
         }
 
         private void Click_5(object sender, RoutedEventArgs e)
         {
-            FinalNumber.Text = "" + nr.TrainModel(5);
+            FinalNumber.Text = "" + _nr.TrainModel(5);
         }
 
         private void Click_6(object sender, RoutedEventArgs e)
         {
-            FinalNumber.Text = "" + nr.TrainModel(6);
+            FinalNumber.Text = "" + _nr.TrainModel(6);
         }
 
         private void Click_7(object sender, RoutedEventArgs e)
         {
-            FinalNumber.Text = "" + nr.TrainModel(7);
+            FinalNumber.Text = "" + _nr.TrainModel(7);
         }
 
         private void Click_8(object sender, RoutedEventArgs e)
         {
-            FinalNumber.Text = "" + nr.TrainModel(8);
+            FinalNumber.Text = "" + _nr.TrainModel(8);
         }
 
         private void Click_9(object sender, RoutedEventArgs e)
         {
-            FinalNumber.Text = "" + nr.TrainModel(9);
+            FinalNumber.Text = "" + _nr.TrainModel(9);
         }
     }
 }

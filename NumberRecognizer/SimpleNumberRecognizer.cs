@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Matrix;
 
@@ -13,9 +14,16 @@ namespace NumberRecognizer
     {
         private Matrix<double> _pixels = new(784, 1);
 
+        [JsonInclude] [JsonPropertyName("Weights1")]
         private Matrix<double> _weights1 = new Matrix<double>(64, 784);
+
+        [JsonInclude] [JsonPropertyName("Biases1")]
         private Matrix<double> _biases1 = new Matrix<double>(64, 1);
+        
+        [JsonInclude] [JsonPropertyName("Weights2")]
         private Matrix<double> _weights2 = new Matrix<double>(10, 64);
+        
+        [JsonInclude] [JsonPropertyName("Biases2")]
         private Matrix<double> _biases2 = new Matrix<double>(10, 1);
 
         private Matrix<double> _preActivationHiddenLayerZ1 = new Matrix<double>(64, 1);
@@ -26,20 +34,20 @@ namespace NumberRecognizer
         private List<Matrix<double>> _allMNISTImages; // List of 784x1 matrices
         private List<Matrix<double>> _allMNISTLabels; // List of 10x1 matrices
 
+        private double _loss;
         private int _numOfMNISTImages = 1;
         private const double LearningLevel = .01;
 
-        private readonly string _filename;
+        private readonly string _filename =
+            "C:\\Users\\zachs\\RiderProjects\\NumberRecognizer\\Numbers\\CurrentNumber.png";
 
         /// <summary>
         ///  Constructs a SimpleNumberRecognizer and initialize random weights and biases. 
         /// </summary>
-        /// <param name="filename"> Filename of the image path. </param>
-        public SimpleNumberRecognizer(string filename)
+        public SimpleNumberRecognizer()
         {
             // Initialize random weights and biases (W1: 784 x 64, b1: 64x1, W2: 64x10, b2: 10x1)
             InitializeWeightsAndBiases();
-            _filename = filename;
         }
 
         /// <summary>
@@ -98,7 +106,8 @@ namespace NumberRecognizer
             ReadMNIST(_numOfMNISTImages);
             //SaveMNISTImageAsPNG();
 
-            for (int i = 0; i < _numOfMNISTImages; i++)
+            int numCorrect = 0;
+            for (int i = 0; i < iterations; i++)
             {
                 // Feed forward (Compute initial predictions)
                 var output = ForwardPropagation(_allMNISTImages[i]);
@@ -107,9 +116,12 @@ namespace NumberRecognizer
                 TrainWeights(_allMNISTImages[i], _allMNISTLabels[i]);
 
                 // Print the guess every 1000 times 
-                PrintMNISTGuess(i, output);
-
+                PrintMNISTGuess(i, output, ref numCorrect);
             }
+
+            double percentCorret = (double)numCorrect / iterations * 100;
+            Console.WriteLine();
+            Console.WriteLine($"Percent correct: {percentCorret:F3}%");
         }
 
         /// <summary>
@@ -189,10 +201,10 @@ namespace NumberRecognizer
             }
 
             // Find bounding box of the digit (non-zero pixels)
-            int minX = image.Width - 1;
-            int minY = image.Height - 1;
-            int maxX = 0;
-            int maxY = 0;
+            var minX = image.Width - 1;
+            var minY = image.Height - 1;
+            var maxX = 0;
+            var maxY = 0;
 
             for (int row = 0; row < gray.Rows; row++)
             {
@@ -208,20 +220,20 @@ namespace NumberRecognizer
                 }
             }
 
-            int boxWidth = maxX - minX + 1;
-            int boxHeight = maxY - minY + 1;
+            var boxWidth = maxX - minX + 1;
+            var boxHeight = maxY - minY + 1;
 
             // Resize and center digit into 28x28 frame
-            float scale = Math.Min((float)width / boxWidth, (float)height / boxHeight);
-            int newWidth = (int)(boxWidth * scale);
-            int newHeight = (int)(boxHeight * scale);
+            var scale = Math.Min((float)width / boxWidth, (float)height / boxHeight);
+            var newWidth = (int)(boxWidth * scale);
+            var newHeight = (int)(boxHeight * scale);
 
             var canvas = new Matrix<double>(height, width);
-            int offsetX = (width - newWidth) / 2;
-            int offsetY = (height - newHeight) / 2;
+            var offsetX = (width - newWidth) / 2;
+            var offsetY = (height - newHeight) / 2;
 
             // Resample pixels (nearest neighbor)
-            for (int y = 0; y < newHeight; y++)
+            for (var y = 0; y < newHeight; y++)
             {
                 for (int x = 0; x < newWidth; x++)
                 {
@@ -232,7 +244,7 @@ namespace NumberRecognizer
             }
 
             // Flatten into 784x1 matrix
-            for (int row = 0; row < height; row++)
+            for (var row = 0; row < height; row++)
             {
                 for (int col = 0; col < width; col++)
                 {
@@ -308,7 +320,7 @@ namespace NumberRecognizer
         private void TrainWeights(Matrix<double> imageMatrix, Matrix<double> labelMatrix)
         {
             // Loss Function
-            var loss = -Math.Log2(_outputLayerA2.Max());
+            _loss = -Math.Log2(_outputLayerA2.Max());
 
             // Output layer error
             var d2 = CalculateOutputLayerError(labelMatrix);
@@ -576,32 +588,33 @@ namespace NumberRecognizer
             Console.WriteLine();
         }
 
-        private void PrintMNISTGuess(int i, Matrix<double> output)
+        private void PrintMNISTGuess(int i, Matrix<double> output, ref int numCorrrect)
         {
-            if (i % 1000 == 0)
+            var label = FinalGuess(_allMNISTLabels[i]);
+            var guess = FinalGuess(output);
+            if (guess == label && i % 100 != 0)
+                numCorrrect++;
+
+            // only print every 100 guesses
+            if (i % 100 != 0) return;
+
+            Console.Write($"Image: {i} Correct answer: {label} Guess: {guess} Loss: {_loss:F4} ");
+            if (guess == label)
             {
-                var label = FinalGuess(_allMNISTLabels[i]);
-                var guess = FinalGuess(output);
-                Console.Write($"Image: {i} Correct answer: {label} Guess: {guess} ");
-
-                if (guess == label)
-                {
-                    Console.BackgroundColor = ConsoleColor.Green;
-                    Console.ForegroundColor = ConsoleColor.White;
-                    Console.Write(" CORRECT!");
-                    Console.ResetColor();
-                }
-                else
-                {
-                    Console.BackgroundColor = ConsoleColor.Red;
-                    Console.ForegroundColor = ConsoleColor.White;
-                    Console.Write(" INCORRECT!");
-                    Console.ResetColor();
-                }
-
-                Console.ResetColor();
-                Console.WriteLine();
+                Console.BackgroundColor = ConsoleColor.Green;
+                Console.ForegroundColor = ConsoleColor.White;
+                Console.Write(" CORRECT!");
+                numCorrrect++;
             }
+            else
+            {
+                Console.BackgroundColor = ConsoleColor.Red;
+                Console.ForegroundColor = ConsoleColor.White;
+                Console.Write(" INCORRECT!");
+            }
+
+            Console.ResetColor();
+            Console.WriteLine();
         }
     }
 }
