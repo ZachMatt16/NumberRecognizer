@@ -88,8 +88,6 @@ namespace NumberRecognizer
             Console.WriteLine();
             Console.WriteLine();
             Console.WriteLine();
-            Console.WriteLine();
-            Console.WriteLine();
 
             return FinalGuess(output);
         }
