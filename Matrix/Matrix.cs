@@ -107,13 +107,12 @@ public class Matrix<T> where T : IComparable<T>
     /// <returns> The max element in the matrix. </returns>
     public T Max()
     {
-        T max = _backing2DArray[0][0];
+        var max = _backing2DArray[0][0];
         foreach (var array in _backing2DArray)
         {
             if (array.Max().CompareTo(max) > 0)
                 max = array.Max();
         }
-
         return max;
     }
 
