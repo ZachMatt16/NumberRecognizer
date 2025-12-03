@@ -91,7 +91,7 @@ namespace NumberRecognizer
             _numOfMnistImages = iterations;
 
             // Read and store MNIST dataset
-            ReadMNIST(_numOfMnistImages);
+            ReadMnist(_numOfMnistImages);
 
             int numCorrect = 0;
             for (int i = 0; i < iterations; i++)
@@ -111,7 +111,7 @@ namespace NumberRecognizer
         ///  Reads and stores iteration number of images and labels 
         /// </summary>
         /// <exception cref="Exception"> Thrown if the number of images and number of labels from the file aren't equal</exception>
-        private void ReadMNIST(int iterations)
+        private void ReadMnist(int iterations)
         {
             using var imageReader =
                 new BinaryReader(File.OpenRead(
@@ -166,9 +166,9 @@ namespace NumberRecognizer
         {
             const int width = 28;
             const int height = 28;
-            const double RScale = 0.299;
-            const double GScale = 0.587;
-            const double BScale = 0.114;
+            const double rScale = 0.299;
+            const double gScale = 0.587;
+            const double bScale = 0.114;
 
             using var image = Image.Load<Rgba32>(_filename);
 
@@ -179,7 +179,7 @@ namespace NumberRecognizer
                 for (int col = 0; col < image.Width; col++)
                 {
                     var px = image[col, row]; // col = x, row = y
-                    gray[row, col] = (px.R * RScale + px.G * GScale + px.B * BScale) / 255.0;
+                    gray[row, col] = (px.R * rScale + px.G * gScale + px.B * bScale) / 255.0;
                 }
             }
 
@@ -268,7 +268,7 @@ namespace NumberRecognizer
         /// Forward propagate the given matrix through the weights using
         /// ReLU and softmax as hidden and output layer activation functions.
         /// </summary>
-        /// <param name="matrix"> The given matrix. </param>
+        /// <param name="imageMatrix"> The given matrix. </param>
         /// <returns> The final output layer. </returns>
         private Matrix<double> ForwardPropagation(Matrix<double> imageMatrix)
         {
@@ -299,7 +299,8 @@ namespace NumberRecognizer
         /// <summary>
         ///  Trains the weights given an image and correct label.
         /// </summary>
-        /// <param name="mnistIndex"> Index of image and label. </param>
+        /// <param name="imageMatrix"> The image matrix. </param>
+        /// <param name="labelMatrix"> The label matrix. </param>
         private void TrainWeights(Matrix<double> imageMatrix, Matrix<double> labelMatrix)
         {
             // Loss Function
@@ -309,16 +310,16 @@ namespace NumberRecognizer
             var d2 = CalculateOutputLayerError(labelMatrix);
 
             // Output layer weight and biases gradient
-            (Matrix<double> oWG, Matrix<double> oBG) = CalculateOutputLayerGradient(d2);
+            (Matrix<double> owg, Matrix<double> obg) = CalculateOutputLayerGradient(d2);
 
             // Hidden layer error
             var d1 = CalculateHiddenLayerError(d2);
 
             // Hidden layer weight and biases gradient
-            (Matrix<double> hWG, Matrix<double> hBG) = CalculateHiddenLayerGradient(d1, imageMatrix);
+            (Matrix<double> hwg, Matrix<double> hbg) = CalculateHiddenLayerGradient(d1, imageMatrix);
 
             // Update weights based on gradients
-            UpdateWeights(hWG, hBG, oWG, oBG);
+            UpdateWeights(hwg, hbg, owg, obg);
         }
 
         /// <summary>
@@ -363,7 +364,7 @@ namespace NumberRecognizer
 
             // ElementWiseMultiplication between d1 and the ReLU derivation of z1
             d1 = Matrix<double>.ElementWiseMultiplication(d1,
-                ReLUDerivative(_preActivationHiddenLayerZ1)); // 64x1 matrix 
+                ReLuDerivative(_preActivationHiddenLayerZ1)); // 64x1 matrix 
 
             return d1;
         }
@@ -450,7 +451,7 @@ namespace NumberRecognizer
         /// </summary>
         /// <param name="z1"> Give matrix to be derived from. </param>
         /// <returns> Derived matrix of given matrix. </returns>
-        private Matrix<double> ReLUDerivative(Matrix<double> z1)
+        private Matrix<double> ReLuDerivative(Matrix<double> z1)
         {
             var result = new Matrix<double>(z1.Rows, z1.Cols);
             for (int i = 0; i < z1.Rows; i++)
