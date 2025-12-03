@@ -11,24 +11,16 @@
     </ItemGroup>
 
     <ItemGroup>
-      <None Update="MNIST Dataset\t10k-images.idx3-ubyte">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="MNIST Dataset\t10k-labels.idx1-ubyte">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="MNIST Dataset\train-images.idx3-ubyte">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="MNIST Dataset\train-labels.idx1-ubyte">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="Numbers\CurrentNumber.png">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="Models\Model.txt">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
+        <Content Include="Models\**">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Include="MNIST Dataset\**">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Include="Numbers\**">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
     </ItemGroup>
+
 
 </Project>

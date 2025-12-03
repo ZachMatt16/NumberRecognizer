@@ -126,7 +126,7 @@ namespace WPF
             try
             {
                 File.WriteAllText("Models/Model.txt", GetJsonStringRepresentation());
-            }
+            }   
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
