@@ -127,11 +127,11 @@ namespace NumberRecognizer
         {
             using var imageReader =
                 new BinaryReader(File.OpenRead(
-                    @"C:\Users\zachs\RiderProjects\NumberRecognizer\MNIST Dataset\train-images.idx3-ubyte"));
+                    @"MNIST Dataset\train-images.idx3-ubyte"));
 
             using var labelReader =
                 new BinaryReader(File.OpenRead(
-                    @"C:\Users\zachs\RiderProjects\NumberRecognizer\MNIST Dataset\train-labels.idx1-ubyte"));
+                    @"MNIST Dataset\train-labels.idx1-ubyte"));
 
             // read magic number, number of images and num of rows and columns for image and label
             ReadBigInt32(imageReader); // magic number
