@@ -1,4 +1,7 @@
-﻿using System;
+﻿// <authors> Zach Mattson </authors>
+// <date> 12/2/25 </date>
+
+using System;
 using System.IO;
 using System.Numerics;
 using System.Text;

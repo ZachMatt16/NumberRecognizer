@@ -1,4 +1,5 @@
-﻿/// <authors> Zach Mattson <authors/>
+﻿// <authors> Zach Mattson </authors>
+// <date> 12/2/25 </date>
 
 using System.Text.Json.Serialization;
 
@@ -141,6 +142,14 @@ public class Matrix<T> where T : IComparable<T>
         return result;
     }
 
+    /// <summary>
+    ///  Preforms element wise matrix multiplication on the two matrices. If the two matrices are not the same exact size
+    ///  then element wise matrix multiplication cannot be preformed so a MatrixDimensionMismatchException is thrown.
+    /// </summary>
+    /// <param name="m1"> The first matrix. </param>
+    /// <param name="m2"> The second matrix. </param>
+    /// <returns> The product of the two matrices. </returns>
+    /// <exception cref="MatrixDimensionMismatchException"> Thrown the two matrices are not the same exact size </exception>
     public static Matrix<double> ElementWiseMultiplication(Matrix<double> m1, Matrix<double> m2)
     {
         // Check if dimensions match
@@ -155,6 +164,14 @@ public class Matrix<T> where T : IComparable<T>
         return result;
     }
 
+    /// <summary>
+    ///  Preforms matrix addition on the two matrices. If the two matrices are not the same exact size
+    ///  then matrix addition cannot be preformed so a MatrixDimensionMismatchException is thrown.
+    /// </summary>
+    /// <param name="m1"> The first matrix. </param>
+    /// <param name="m2"> The second matrix. </param>
+    /// <returns> The sum of the two matrices. </returns>
+    /// <exception cref="MatrixDimensionMismatchException"> Thrown the two matrices are not the same exact size </exception>
     public static Matrix<double> MatrixAddition(Matrix<double> m1, Matrix<double> m2)
     {
         // Check if dimensions match

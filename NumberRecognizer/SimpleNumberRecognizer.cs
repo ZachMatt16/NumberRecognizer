@@ -1,4 +1,7 @@
-﻿using SixLabors.ImageSharp;
+﻿// <authors> Zach Mattson </authors>
+// <date> 12/2/25 </date>
+
+using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using System;
 using System.Collections.Generic;
@@ -56,19 +59,20 @@ namespace NumberRecognizer
         /// <returns> The final prediction. </returns>
         public int PredictNumber()
         {
-            //PrintWeights();
-
             // Get Normalized Pixel Vector
             var drawnImageMatrix = GetPixelMatrix();
-            //PrintPixels(drawnImageMatrix);
 
             // Forward Propagate (Make guess)
             var output = ForwardPropagation(drawnImageMatrix);
-            //PrintOutputLayer();
 
             return FinalGuess(output);
         }
 
+        /// <summary>
+        ///  Trains the model given the correct answer
+        /// </summary>
+        /// <param name="label"> The correct answer. </param>
+        /// <returns> The new guess after the model has been trained once. </returns>
         public int TrainModel(int label)
         {
             Console.Write("Original ");
@@ -82,12 +86,6 @@ namespace NumberRecognizer
 
             // Forward Prop again to recalculate outputs
             var output = ForwardPropagation(_pixels);
-            Console.Write("New ");
-            PrintOutputLayer();
-
-            Console.WriteLine();
-            Console.WriteLine();
-            Console.WriteLine();
 
             return FinalGuess(output);
         }
@@ -102,7 +100,6 @@ namespace NumberRecognizer
 
             // Read and store MNIST dataset
             ReadMNIST(_numOfMNISTImages);
-            //SaveMNISTImageAsPNG();
 
             int numCorrect = 0;
             for (int i = 0; i < iterations; i++)
@@ -113,8 +110,8 @@ namespace NumberRecognizer
                 // Backward propagation (Train weights)
                 TrainWeights(_allMNISTImages[i], _allMNISTLabels[i]);
 
-                // Print the guess every 1000 times 
-                PrintMNISTGuess(i, output, ref numCorrect);
+                // Print the guess every 100 times 
+                PrintMNISTGuess(i, 100, output, ref numCorrect);
             }
 
             double percentCorret = (double)numCorrect / iterations * 100;
@@ -254,7 +251,7 @@ namespace NumberRecognizer
         }
 
         /// <summary>
-        ///  Initialize random weights [-0.01, +0.01] and all 0 biases. 
+        ///  Initialize random weights from [-0.01, +0.01] and all biases to 0. 
         /// </summary>
         private void InitializeWeightsAndBiases()
         {
@@ -424,6 +421,11 @@ namespace NumberRecognizer
             _biases2 = GradientDifference(_biases2, oBG);
         }
 
+        /// <summary>
+        ///  Make the final guess
+        /// </summary>
+        /// <param name="matrix"> </param>
+        /// <returns></returns>
         private int FinalGuess(Matrix<double> matrix)
         {
             int maxIndex = 0;
@@ -586,7 +588,7 @@ namespace NumberRecognizer
             Console.WriteLine();
         }
 
-        private void PrintMNISTGuess(int i, Matrix<double> output, ref int numCorrrect)
+        private void PrintMNISTGuess(int i, int iterations, Matrix<double> output, ref int numCorrrect)
         {
             var label = FinalGuess(_allMNISTLabels[i]);
             var guess = FinalGuess(output);
@@ -594,7 +596,7 @@ namespace NumberRecognizer
                 numCorrrect++;
 
             // only print every 100 guesses
-            if (i % 100 != 0) return;
+            if (i % iterations != 0) return;
 
             Console.Write($"Image: {i} Correct answer: {label} Guess: {guess} Loss: {_loss:F4} ");
             if (guess == label)
