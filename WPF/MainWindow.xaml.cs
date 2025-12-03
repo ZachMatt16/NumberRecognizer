@@ -44,7 +44,7 @@ namespace WPF
         /// <summary>
         ///  File path of the image
         /// </summary>
-        private string _localFileName = "C:\\Users\\zachs\\RiderProjects\\NumberRecognizer\\Numbers\\CurrentNumber.png";
+        private string _localFileName = "Numbers\\CurrentNumber.png";
 
         private string _weightsFileName;
 

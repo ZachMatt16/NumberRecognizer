@@ -42,7 +42,7 @@ namespace NumberRecognizer
         private const double LearningLevel = .01;
 
         private readonly string _filename =
-            "C:\\Users\\zachs\\RiderProjects\\NumberRecognizer\\Numbers\\CurrentNumber.png";
+            "Numbers\\CurrentNumber.png";
 
         /// <summary>
         ///  Constructs a SimpleNumberRecognizer and initialize random weights and biases. 
@@ -127,7 +127,7 @@ namespace NumberRecognizer
         {
             using var imageReader =
                 new BinaryReader(File.OpenRead(
-                    @"MNIST Dataset\train-images.idx3-ubyte"));
+                    @"MNIST Dataset/train-images.idx3-ubyte"));
 
             using var labelReader =
                 new BinaryReader(File.OpenRead(
@@ -514,7 +514,7 @@ namespace NumberRecognizer
 
                 // Save as PNG
                 image.Save(
-                    $"C:\\Users\\zachs\\RiderProjects\\NumberRecognizer\\Numbers\\mnist_image{i}_label_{label}.png");
+                    $"Numbers\\mnist_image{i}_label_{label}.png");
             }
         }
 
