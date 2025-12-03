@@ -125,7 +125,7 @@ namespace WPF
         {
             try
             {
-                File.WriteAllText("C:\\Users\\zachs\\OneDrive\\Desktop\\Model.txt", GetJsonStringRepresentation());
+                File.WriteAllText("Models/Model.txt", GetJsonStringRepresentation());
             }
             catch (Exception ex)
             {
