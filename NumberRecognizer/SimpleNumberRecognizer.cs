@@ -3,19 +3,14 @@
 
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 using Matrix;
 
 namespace NumberRecognizer
 {
     public class SimpleNumberRecognizer
     {
-        private Matrix<double> _pixels = new(784, 1);
+        private readonly Matrix<double> _pixels = new(784, 1);
 
         [JsonInclude] [JsonPropertyName("Weights1")]
         private Matrix<double> _weights1 = new Matrix<double>(64, 784);
@@ -30,15 +25,15 @@ namespace NumberRecognizer
         private Matrix<double> _biases2 = new Matrix<double>(10, 1);
 
         private Matrix<double> _preActivationHiddenLayerZ1 = new Matrix<double>(64, 1);
-        private Matrix<double> _hiddenLayerA1 = new Matrix<double>(64, 1);
+        private readonly Matrix<double> _hiddenLayerA1 = new Matrix<double>(64, 1);
         private Matrix<double> _preActivationOutputLayerZ2 = new Matrix<double>(10, 1);
-        private Matrix<double> _outputLayerA2 = new Matrix<double>(10, 1);
+        private readonly Matrix<double> _outputLayerA2 = new Matrix<double>(10, 1);
 
-        private List<Matrix<double>> _allMNISTImages; // List of 784x1 matrices
-        private List<Matrix<double>> _allMNISTLabels; // List of 10x1 matrices
+        private List<Matrix<double>> _allMnistImages; // List of 784x1 matrices
+        private List<Matrix<double>> _allMnistLabels; // List of 10x1 matrices
 
         private double _loss;
-        private int _numOfMNISTImages = 1;
+        private int _numOfMnistImages = 1;
         private const double LearningLevel = .01;
 
         private readonly string _filename =
@@ -75,9 +70,6 @@ namespace NumberRecognizer
         /// <returns> The new guess after the model has been trained once. </returns>
         public int TrainModel(int label)
         {
-            Console.Write("Original ");
-            PrintOutputLayer();
-
             var oneHot = new Matrix<double>(10, 1);
             oneHot[label, 0] = 1;
 
@@ -94,29 +86,25 @@ namespace NumberRecognizer
         ///  Trains the model on iteration MNIST images from the MNIST dataset.
         /// </summary>
         /// <param name="iterations"> The number of images to train the model on </param>
-        public void TrainModelWithMNIST(int iterations)
+        public void TrainModelWithMnist(int iterations)
         {
-            _numOfMNISTImages = iterations;
+            _numOfMnistImages = iterations;
 
             // Read and store MNIST dataset
-            ReadMNIST(_numOfMNISTImages);
+            ReadMNIST(_numOfMnistImages);
 
             int numCorrect = 0;
             for (int i = 0; i < iterations; i++)
             {
                 // Feed forward (Compute initial predictions)
-                var output = ForwardPropagation(_allMNISTImages[i]);
+                var output = ForwardPropagation(_allMnistImages[i]);
 
                 // Backward propagation (Train weights)
-                TrainWeights(_allMNISTImages[i], _allMNISTLabels[i]);
+                TrainWeights(_allMnistImages[i], _allMnistLabels[i]);
 
                 // Print the guess every 100 times 
-                PrintMNISTGuess(i, 100, output, ref numCorrect);
+                // PrintMNISTGuess(i, 100, output, ref numCorrect);
             }
-
-            double percentCorret = (double)numCorrect / iterations * 100;
-            Console.WriteLine();
-            Console.WriteLine($"Percent correct: {percentCorret:F3}%");
         }
 
         /// <summary>
@@ -150,23 +138,23 @@ namespace NumberRecognizer
             numLabels = iterations;
 
             // Read and store MNIST Images
-            _allMNISTImages = new List<Matrix<double>>(numImages);
+            _allMnistImages = new List<Matrix<double>>(numImages);
             for (var i = 0; i < iterations; i++)
             {
                 var pixels = imageReader.ReadBytes(numRows * numCols);
-                _allMNISTImages.Add(new Matrix<double>(numRows * numCols, 1)); // 784x1 matrix
-                for (var j = 0; j < _allMNISTImages[i].Rows; j++)
-                    _allMNISTImages[i][j, 0] = pixels[j] / 255.0; // normalize and save image
+                _allMnistImages.Add(new Matrix<double>(numRows * numCols, 1)); // 784x1 matrix
+                for (var j = 0; j < _allMnistImages[i].Rows; j++)
+                    _allMnistImages[i][j, 0] = pixels[j] / 255.0; // normalize and save image
             }
 
 
             // Read and store MNIST Labels as one-hot vector
             // [0, 0, 0, 0, 1, 0, 0, 0, 0, 0] if the label is 5
-            _allMNISTLabels = new List<Matrix<double>>(numLabels);
+            _allMnistLabels = new List<Matrix<double>>(numLabels);
             for (var i = 0; i < iterations; i++)
             {
-                _allMNISTLabels.Add(new Matrix<double>(10, 1)); // number of digits is 10
-                _allMNISTLabels[i][labelReader.ReadByte(), 0] = 1;
+                _allMnistLabels.Add(new Matrix<double>(10, 1)); // number of digits is 10
+                _allMnistLabels[i][labelReader.ReadByte(), 0] = 1;
             }
         }
 
@@ -373,7 +361,7 @@ namespace NumberRecognizer
             // Matrix multiplication between the transpose of the output layer weights and the output layer error 
             var d1 = Matrix<double>.MatrixMultiplication(Matrix<double>.Transpose(_weights2), d2); // 64x1 matrix 
 
-            // ElementWiseMultiplication bewteen d1 and the ReLU derivation of z1
+            // ElementWiseMultiplication between d1 and the ReLU derivation of z1
             d1 = Matrix<double>.ElementWiseMultiplication(d1,
                 ReLUDerivative(_preActivationHiddenLayerZ1)); // 64x1 matrix 
 
@@ -446,7 +434,7 @@ namespace NumberRecognizer
         ///  Private helper method that takes the difference between a matrix and its gradient multiplied by a learning level.
         /// </summary>
         /// <param name="minuend"> The matrix to be subtracted from. </param>
-        /// <param name="subtrahend"> The matrix to subtracte from. </param>
+        /// <param name="subtrahend"> The matrix to subtract from. </param>
         /// <returns> The difference between a matrix and its gradient multiplied by a learning level. </returns>
         private Matrix<double> GradientDifference(Matrix<double> minuend, Matrix<double> subtrahend)
         {
@@ -495,21 +483,21 @@ namespace NumberRecognizer
 
             using var image = new Image<L8>(width, height); // L8 = 8-bit grayscale
 
-            for (var i = 0; i < _numOfMNISTImages; i++)
+            for (var i = 0; i < _numOfMnistImages; i++)
             {
                 for (var y = 0; y < height; y++)
                 {
                     for (var x = 0; x < width; x++)
                     {
-                        double value = _allMNISTImages[i][y * width + x, 0];
+                        double value = _allMnistImages[i][y * width + x, 0];
                         byte gray = (byte)(value * 255); // convert 0–1 to 0–255
                         image[x, y] = new L8(gray);
                     }
                 }
 
                 var label = 0;
-                for (var j = 0; j < _allMNISTLabels[i].Rows; j++)
-                    if (_allMNISTLabels[i][j, 0] >= 1)
+                for (var j = 0; j < _allMnistLabels[i].Rows; j++)
+                    if (_allMnistLabels[i][j, 0] >= 1)
                         label = j;
 
                 // Save as PNG
@@ -588,12 +576,12 @@ namespace NumberRecognizer
             Console.WriteLine();
         }
 
-        private void PrintMNISTGuess(int i, int iterations, Matrix<double> output, ref int numCorrrect)
+        private void PrintMnistGuess(int i, int iterations, Matrix<double> output, ref int numCorrect)
         {
-            var label = FinalGuess(_allMNISTLabels[i]);
+            var label = FinalGuess(_allMnistLabels[i]);
             var guess = FinalGuess(output);
             if (guess == label && i % 100 != 0)
-                numCorrrect++;
+                numCorrect++;
 
             // only print every 100 guesses
             if (i % iterations != 0) return;
@@ -604,7 +592,7 @@ namespace NumberRecognizer
                 Console.BackgroundColor = ConsoleColor.Green;
                 Console.ForegroundColor = ConsoleColor.White;
                 Console.Write(" CORRECT!");
-                numCorrrect++;
+                numCorrect++;
             }
             else
             {

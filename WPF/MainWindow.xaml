@@ -16,7 +16,7 @@
                 MouseUp="Canvas_MouseUp" MouseMove="Canvas_MouseMove" Width="560" Height="560" />
         <TextBlock HorizontalAlignment="Left" Margin="17,6,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="78" Height="23" Text="Brush Size:" Grid.Column="1" FontSize="15" TextAlignment="Center"/>
         <Button x:Name="Save_File_Button" Content="Save Model" HorizontalAlignment="Left" Margin="5,250,0,0"
-                VerticalAlignment="Top" Height="41" Width="176" Click="Handle_Save_Click" FontSize="20" Grid.Column="1" FontWeight="Bold" />
+                VerticalAlignment="Top" Height="41" Width="105" Click="Handle_Save_Click" FontSize="18" Grid.Column="1" FontWeight="Bold" />
         <Slider x:Name="slider" Minimum="30" Maximum="60" Value="45" TickFrequency="1" IsSnapToTickEnabled="True" Margin="10,32,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Height="21" Width="171" Grid.Column="1"/>
         <TextBox x:Name="Radius" Text="{Binding Value, ElementName=slider, Mode=TwoWay}" Width="67" Margin="114,8,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" RenderTransformOrigin="0.526,0.815" Height="19" Grid.Column="1"/>
         <Button x:Name="NumberRecognizer" Content="What number is this?" HorizontalAlignment="Left" Margin="5,103,0,0" VerticalAlignment="Top" Height="32" Width="104" Click="NumberRecognizer_Click" Grid.Column="1" FontSize="10" FontWeight="Bold" Cursor=""/>
@@ -37,5 +37,7 @@
             VerticalAlignment="Top" Height="41" Width="176" Click="Handle_Clear_Click" FontSize="20" Grid.Column="1" FontWeight="Bold" />
         <Button x:Name="Load_Model" Content="Load Model" HorizontalAlignment="Left" Margin="5,296,0,0"
             VerticalAlignment="Top" Height="41" Width="176" Click="Handle_Load_Click" FontSize="20" Grid.Column="1" FontWeight="Bold" />
+        <TextBox x:Name="Save_File_Name" HorizontalAlignment="Left" Margin="116,0,0,0" TextWrapping="Wrap" VerticalAlignment="Center" Width="65" Height="21" FontSize="12" BorderThickness="1,1,1,1" Grid.Column="1" Text="Model" AutomationProperties.ItemType=""/>
+        <TextBlock Grid.Column="1" HorizontalAlignment="Left" Margin="114,252,0,0" TextWrapping="Wrap" Text="Enter File Name:" VerticalAlignment="Top" Width="72" Height="14" FontSize="9" FontWeight="Bold"/>
     </Grid>
 </Window>

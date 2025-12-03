@@ -3,18 +3,12 @@
 
 using System;
 using System.IO;
-using System.Numerics;
-using System.Text;
 using System.Text.Json;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Microsoft.Win32;
 using NumberRecognizer;
@@ -40,43 +34,41 @@ namespace WPF
         /// Field to store the previous point for drawing lines
         /// </summary>
         private Point _previousPoint;
-
+        
         /// <summary>
-        ///  File path of the image
+        ///  Initializes a new SimpleNumberRecognizer
         /// </summary>
-        private string _localFileName = "Numbers\\CurrentNumber.png";
-
-        private string _weightsFileName;
-
         private SimpleNumberRecognizer _nr = new();
 
+        /// <summary>
+        ///  Initializes the component.
+        /// </summary>
         public MainWindow()
         {
             InitializeComponent();
         }
 
         /// <summary>
-        /// Checks if the mouse button is pressed
+        ///  Checks if the mouse button is pressed.
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">The Canvas that raised the event. </param>
+        /// <param name="e"> Mouse event data, including which button was pressed and cursor position. </param>
         private void Canvas_MouseDown(object sender, MouseButtonEventArgs e)
         {
             if (e.LeftButton == MouseButtonState.Pressed)
                 _isDrawing = true;
 
-
             if (e.RightButton == MouseButtonState.Pressed)
                 _isErasing = true;
-
+            
             _previousPoint = e.GetPosition(Canvas);
         }
 
         /// <summary>
-        /// Checks if the mouse button is released
+        ///  Checks if the mouse button is released
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">The Canvas that raised the event. </param>
+        /// <param name="e"> Mouse event data, including which button was pressed and cursor position. </param>
         private void Canvas_MouseUp(object sender, MouseButtonEventArgs e)
         {
             _isDrawing = false;
@@ -84,10 +76,10 @@ namespace WPF
         }
 
         /// <summary>
-        /// 
+        ///  Handles mouse movement. 
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">The Canvas that raised the event. </param>
+        /// <param name="e"> Mouse event data, including which button was pressed and cursor position. </param>
         private void Canvas_MouseMove(object sender, MouseEventArgs e)
         {
             // create point and store radius value
@@ -121,12 +113,17 @@ namespace WPF
             Canvas.Children.Add(circle);
         }
 
+        /// <summary>
+        ///  Saves the model to the bin/Debug/net9.0-windows/Models folder with the given name.
+        /// </summary>
+        /// <param name="sender"> The "Save File" button. </param>
+        /// <param name="e"> Event data associated with the click. </param>
         private void Handle_Save_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                File.WriteAllText("Models/Model.txt", GetJsonStringRepresentation());
-            }   
+                File.WriteAllText($"Models/{Save_File_Name.Text}.txt", GetJsonStringRepresentation());
+            }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
@@ -137,11 +134,16 @@ namespace WPF
         ///  Returns the json string representing this spreadsheet.
         /// </summary>
         /// <returns> the json string representing this spreadsheet. </returns>
-        public string GetJsonStringRepresentation()
+        private string GetJsonStringRepresentation()
         {
             return JsonSerializer.Serialize(_nr, new JsonSerializerOptions { WriteIndented = true });
         }
 
+        /// <summary>
+        ///  Loads a json file into the number recognizer. 
+        /// </summary>
+        /// <param name="sender"> The "Load File" button. </param>
+        /// <param name="e"> Event data associated with the click. </param>
         private void Handle_Load_Click(object sender, RoutedEventArgs e)
         {
             var openFileDialog = new OpenFileDialog
@@ -162,11 +164,19 @@ namespace WPF
             }
         }
 
+        /// <summary>
+        ///  Clears the canvas. 
+        /// </summary>
+        /// <param name="sender"> The "Clear" button</param>
+        /// <param name="e"> Event data associated with the click. </param>
         private void Handle_Clear_Click(object sender, RoutedEventArgs e)
         {
             Canvas.Children.Clear();
         }
 
+        /// <summary>
+        ///  Saves the current drawn images to the bin/Debug/net9.0-windows/Numbers/CurrentNumber.png file. 
+        /// </summary>
         private void SaveWindowAsImage()
         {
             // Get the size of the canvas
@@ -187,71 +197,131 @@ namespace WPF
             // Encode the RenderTargetBitmap to a PNG file
             var pngEncoder = new PngBitmapEncoder();
             pngEncoder.Frames.Add(BitmapFrame.Create(rtb28));
-            using (var fs = System.IO.File.OpenWrite(_localFileName))
+            using (var fs = System.IO.File.OpenWrite("Numbers/CurrentNumber.png"))
             {
                 pngEncoder.Save(fs);
             }
         }
 
+        /// <summary>
+        ///  Displays the final predicted number. 
+        /// </summary>
+        /// <param name="sender"> The "What number is this?" button. </param>
+        /// <param name="e"> Event data associated with the click. </param>
         private void NumberRecognizer_Click(object sender, RoutedEventArgs e)
         {
             SaveWindowAsImage();
             FinalNumber.Text = "" + _nr.PredictNumber();
         }
 
+        /// <summary>
+        ///  Trains the current model with the given number of iterations or images. 
+        /// </summary>
+        /// <param name="sender"> The "Train Model" button. </param>
+        /// <param name="e"> Event data associated with the click. </param>
         private void Train_Click(object sender, RoutedEventArgs e)
         {
             int.TryParse(Train_Iterations.Text, out int iterations);
             if (iterations > 60_000)
                 iterations = 60_000;
-            _nr.TrainModelWithMNIST(iterations);
+            _nr.TrainModelWithMnist(iterations);
         }
 
+        /// <summary>
+        ///  Trains the model once with a label of 0. 
+        /// </summary>
+        /// <param name="sender"> The "0" button. </param>
+        /// <param name="e"> Event data associated with the click. </param>
         private void Click_0(object sender, RoutedEventArgs e)
         {
             FinalNumber.Text = "" + _nr.TrainModel(0);
         }
 
+        /// <summary>
+        ///  Trains the model once with a label of 1. 
+        /// </summary>
+        /// <param name="sender"> The "0" button. </param>
+        /// <param name="e"> Event data associated with the click. </param>
         private void Click_1(object sender, RoutedEventArgs e)
         {
             FinalNumber.Text = "" + _nr.TrainModel(1);
         }
 
+        /// <summary>
+        ///  Trains the model once with a label of 2. 
+        /// </summary>
+        /// <param name="sender"> The "0" button. </param>
+        /// <param name="e"> Event data associated with the click. </param>
         private void Click_2(object sender, RoutedEventArgs e)
         {
             FinalNumber.Text = "" + _nr.TrainModel(2);
         }
 
+        /// <summary>
+        ///  Trains the model once with a label of 3. 
+        /// </summary>
+        /// <param name="sender"> The "0" button. </param>
+        /// <param name="e"> Event data associated with the click. </param>
         private void Click_3(object sender, RoutedEventArgs e)
         {
             FinalNumber.Text = "" + _nr.TrainModel(3);
         }
 
+        /// <summary>
+        ///  Trains the model once with a label of 4. 
+        /// </summary>
+        /// <param name="sender"> The "0" button. </param>
+        /// <param name="e"> Event data associated with the click. </param>
         private void Click_4(object sender, RoutedEventArgs e)
         {
             FinalNumber.Text = "" + _nr.TrainModel(4);
         }
 
+        /// <summary>
+        ///  Trains the model once with a label of 5. 
+        /// </summary>
+        /// <param name="sender"> The "0" button. </param>
+        /// <param name="e"> Event data associated with the click. </param>
         private void Click_5(object sender, RoutedEventArgs e)
         {
             FinalNumber.Text = "" + _nr.TrainModel(5);
         }
 
+        /// <summary>
+        ///  Trains the model once with a label of 6. 
+        /// </summary>
+        /// <param name="sender"> The "0" button. </param>
+        /// <param name="e"> Event data associated with the click. </param>
         private void Click_6(object sender, RoutedEventArgs e)
         {
             FinalNumber.Text = "" + _nr.TrainModel(6);
         }
 
+        /// <summary>
+        ///  Trains the model once with a label of 7. 
+        /// </summary>
+        /// <param name="sender"> The "0" button. </param>
+        /// <param name="e"> Event data associated with the click. </param>
         private void Click_7(object sender, RoutedEventArgs e)
         {
             FinalNumber.Text = "" + _nr.TrainModel(7);
         }
 
+        /// <summary>
+        ///  Trains the model once with a label of 8. 
+        /// </summary>
+        /// <param name="sender"> The "0" button. </param>
+        /// <param name="e"> Event data associated with the click. </param>
         private void Click_8(object sender, RoutedEventArgs e)
         {
             FinalNumber.Text = "" + _nr.TrainModel(8);
         }
 
+        /// <summary>
+        ///  Trains the model once with a label of 9. 
+        /// </summary>
+        /// <param name="sender"> The "0" button. </param>
+        /// <param name="e"> Event data associated with the click. </param>
         private void Click_9(object sender, RoutedEventArgs e)
         {
             FinalNumber.Text = "" + _nr.TrainModel(9);
