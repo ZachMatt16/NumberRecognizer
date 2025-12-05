@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:WPF"
         mc:Ignorable="d"
         Title="MainWindow" Height="600
-        " Width="750">
+        " Width="760">
     <Grid x:Name="Grid" Height="560 " Margin="0,2,0,2" >
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="560"/>
@@ -15,14 +15,14 @@
         <Canvas x:Name="Canvas" Background="Black" Margin="0,0,0,0" Cursor="Arrow" MouseDown="Canvas_MouseDown"
                 MouseUp="Canvas_MouseUp" MouseMove="Canvas_MouseMove" Width="560" Height="560" />
         <TextBlock HorizontalAlignment="Left" Margin="17,6,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="78" Height="23" Text="Brush Size:" Grid.Column="1" FontSize="15" TextAlignment="Center"/>
-        <Button x:Name="Save_File_Button" Content="Save Model" HorizontalAlignment="Left" Margin="5,258,0,0"
+        <Button x:Name="Save_File_Button" Content="Save Model" HorizontalAlignment="Left" Margin="5,275,0,0"
                 VerticalAlignment="Top" Height="40" Width="105" Click="Handle_Save_Click" FontSize="16" Grid.Column="1" FontWeight="Bold" />
         <Slider x:Name="slider" Minimum="30" Maximum="60" Value="45" TickFrequency="1" IsSnapToTickEnabled="True" Margin="10,32,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Height="21" Width="171" Grid.Column="1"/>
         <TextBox x:Name="Radius" Text="{Binding Value, ElementName=slider, Mode=TwoWay}" Width="67" Margin="114,8,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" RenderTransformOrigin="0.526,0.815" Height="19" Grid.Column="1"/>
         <Button x:Name="NumberRecognizer" Content="What number is this?" HorizontalAlignment="Left" Margin="5,103,0,0" VerticalAlignment="Top" Height="32" Width="104" Click="NumberRecognizer_Click" Grid.Column="1" FontSize="10" FontWeight="Bold" Cursor=""/>
-        <TextBox x:Name="FinalNumber" HorizontalAlignment="Left" Margin="114,104,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="67" Height="31" FontSize="25" BorderThickness="1,1,1,1" Grid.Column="1" />
-        <Button x:Name="Train" Content="Train model" HorizontalAlignment="Left" Margin="5,213,0,0" VerticalAlignment="Top" Height="40" Width="105" Grid.Column="1" Click="Train_Click" FontWeight="Bold" FontSize="16"/>
-        <TextBox x:Name="Train_Iterations" HorizontalAlignment="Left" Margin="116,223,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="65" Height="20" FontSize="12" BorderThickness="1,1,1,1" Grid.Column="1" Text="10000" AutomationProperties.ItemType="" />
+        <TextBox x:Name="FinalNumber" HorizontalAlignment="Left" Margin="112,104,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="67" Height="31" FontSize="25" BorderThickness="1,1,1,1" Grid.Column="1" />
+        <Button x:Name="Train" Content="Train model" IsEnabled = "true" HorizontalAlignment="Left" Margin="5,213,0,0" VerticalAlignment="Top" Height="40" Width="105" Grid.Column="1" Click="Train_Click" FontWeight="Bold" FontSize="16"/>
+        <TextBox x:Name="Train_Iterations" HorizontalAlignment="Left" Margin="114,223,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="65" Height="20" FontSize="12" BorderThickness="1,1,1,1" Grid.Column="1" Text="10000" AutomationProperties.ItemType="" />
         <Button Grid.Column="1" Content="0" HorizontalAlignment="Left" Margin="5,141,0,0" VerticalAlignment="Top" Height="30" Width="30" Click="Click_0"/>
         <Button Grid.Column="1" Content="1" HorizontalAlignment="Left" Margin="41,141,0,0" VerticalAlignment="Top" Height="30" Width="30" Click="Click_1"/>
         <Button Grid.Column="1" Content="2" HorizontalAlignment="Left" Margin="78,141,0,0" VerticalAlignment="Top" Height="30" Width="30" Click="Click_2"/>
@@ -34,12 +34,13 @@
         <Button Grid.Column="1" Content="8" HorizontalAlignment="Left" Margin="114,178,0,0" VerticalAlignment="Top" Height="30" Width="30" Click="Click_8"/>
         <Button Grid.Column="1" Content="9" HorizontalAlignment="Left" Margin="150,178,0,0" VerticalAlignment="Top" Height="30" Width="30" Click="Click_9"/>
         <Button x:Name="Clear_Button" Content="Clear" HorizontalAlignment="Left" Margin="5,58,0,0"
-            VerticalAlignment="Top" Height="41" Width="176" Click="Handle_Clear_Click" FontSize="20" Grid.Column="1" FontWeight="Bold" />
-        <Button x:Name="Load_Model" Content="Load Custom Model" HorizontalAlignment="Left" Margin="5,303,0,0"
-            VerticalAlignment="Top" Height="40" Width="176" Click="Handle_Load_Click" FontSize="16" Grid.Column="1" FontWeight="Bold" />
-        <TextBox x:Name="Save_File_Name" HorizontalAlignment="Left" Margin="117,275,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="65" Height="21" FontSize="12" BorderThickness="1,1,1,1" Grid.Column="1" Text="Model" AutomationProperties.ItemType=""/>
-        <TextBlock Grid.Column="1" HorizontalAlignment="Left" Margin="115,258,0,0" TextWrapping="Wrap" Text="Enter File Name:" VerticalAlignment="Top" Width="72" Height="14" FontSize="9" FontWeight="Bold"/>
-        <Button x:Name="Load_Trained" Content="Load Trained Model" HorizontalAlignment="Left" Margin="5,348,0,0"
-            VerticalAlignment="Top" Height="40" Width="176" Click="Handle_Load__Trained_Click" FontSize="16" Grid.Column="1" FontWeight="Bold" />
+            VerticalAlignment="Top" Height="41" Width="175" Click="Handle_Clear_Click" FontSize="20" Grid.Column="1" FontWeight="Bold" />
+        <Button x:Name="Load_Model" Content="Load Custom Model" HorizontalAlignment="Left" Margin="5,320,0,0"
+            VerticalAlignment="Top" Height="40" Width="175" Click="Handle_Load_Click" FontSize="16" Grid.Column="1" FontWeight="Bold" />
+        <TextBox x:Name="Save_File_Name" HorizontalAlignment="Left" Margin="115,290,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="65" Height="21" FontSize="12" BorderThickness="1,1,1,1" Grid.Column="1" Text="Model" AutomationProperties.ItemType="" TextAlignment="Center"/>
+        <TextBlock Grid.Column="1" HorizontalAlignment="Left" Margin="115,275,0,0" TextWrapping="Wrap" Text="File Name:" VerticalAlignment="Top" Width="64" Height="14" FontSize="9" FontWeight="Bold" LineHeight="6" TextAlignment="Center"/>
+        <Button x:Name="Load_Trained" Content="Load Trained Model" HorizontalAlignment="Left" Margin="5,365,0,0"
+            VerticalAlignment="Top" Height="40" Width="175" Click="Handle_Load_Trained_Click" FontSize="16" Grid.Column="1" FontWeight="Bold" />
+        <ProgressBar x:Name="Training_Progress" Grid.Column="1" HorizontalAlignment="Left" Height="9" Margin="5,258,0,0" VerticalAlignment="Top" Width="175"/>
     </Grid>
 </Window>

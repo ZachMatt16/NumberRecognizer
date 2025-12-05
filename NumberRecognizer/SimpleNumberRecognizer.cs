@@ -86,7 +86,7 @@ namespace NumberRecognizer
         ///  Trains the model on iteration MNIST images from the MNIST dataset.
         /// </summary>
         /// <param name="iterations"> The number of images to train the model on </param>
-        public void TrainModelWithMnist(int iterations)
+        public void TrainModelWithMnist(int iterations, IProgress<int> progress)
         {
             _numOfMnistImages = iterations;
 
@@ -102,8 +102,10 @@ namespace NumberRecognizer
                 // Backward propagation (Train weights)
                 TrainWeights(_allMnistImages[i], _allMnistLabels[i]);
 
+                progress.Report(i);
+                
                 // Print the guess every 100 times 
-                // PrintMNISTGuess(i, 100, output, ref numCorrect);
+                // PrintMnistGuess(i, 100, output);
             }
         }
 
@@ -577,15 +579,13 @@ namespace NumberRecognizer
             Console.WriteLine();
         }
 
-        private void PrintMnistGuess(int i, int iterations, Matrix<double> output, ref int numCorrect)
+        private void PrintMnistGuess(int i, int reps, Matrix<double> output)
         {
             var label = FinalGuess(_allMnistLabels[i]);
             var guess = FinalGuess(output);
-            if (guess == label && i % 100 != 0)
-                numCorrect++;
-
-            // only print every 100 guesses
-            if (i % iterations != 0) return;
+            
+            // only print every reps guesses
+            if (i % reps != 0) return;
 
             Console.Write($"Image: {i} Correct answer: {label} Guess: {guess} Loss: {_loss:F4} ");
             if (guess == label)
@@ -593,7 +593,6 @@ namespace NumberRecognizer
                 Console.BackgroundColor = ConsoleColor.Green;
                 Console.ForegroundColor = ConsoleColor.White;
                 Console.Write(" CORRECT!");
-                numCorrect++;
             }
             else
             {

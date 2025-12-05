@@ -4,6 +4,8 @@
 using System;
 using System.IO;
 using System.Text.Json;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -175,7 +177,7 @@ namespace WPF
         /// </summary>
         /// <param name="sender"> The "Load Trained Model" button. </param>
         /// <param name="e"> Event data associated with the click. </param>
-        private void Handle_Load__Trained_Click(object sender, RoutedEventArgs e)
+        private void Handle_Load_Trained_Click(object sender, RoutedEventArgs e)
         {
             using (StreamReader reader = new StreamReader("../../../Data/Models/Trained_Model.txt"))
             {
@@ -240,12 +242,19 @@ namespace WPF
         /// </summary>
         /// <param name="sender"> The "Train Model" button. </param>
         /// <param name="e"> Event data associated with the click. </param>
-        private void Train_Click(object sender, RoutedEventArgs e)
+        private async void Train_Click(object sender, RoutedEventArgs e)
         {
+            // disable train button
+            Train.IsEnabled = false;
+            
+            // max iterations at
             int.TryParse(Train_Iterations.Text, out int iterations);
             if (iterations > 60_000)
                 iterations = 60_000;
-            _nr.TrainModelWithMnist(iterations);
+            Training_Progress.Maximum = iterations;
+            var progress = new Progress<int>(v => { Training_Progress.Value = v; });
+            await Task.Run(() => _nr.TrainModelWithMnist(iterations, progress));
+            Train.IsEnabled = true;
         }
 
         /// <summary>
