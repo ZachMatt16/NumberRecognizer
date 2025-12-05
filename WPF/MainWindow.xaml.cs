@@ -34,7 +34,7 @@ namespace WPF
         /// Field to store the previous point for drawing lines
         /// </summary>
         private Point _previousPoint;
-        
+
         /// <summary>
         ///  Initializes a new SimpleNumberRecognizer
         /// </summary>
@@ -60,7 +60,7 @@ namespace WPF
 
             if (e.RightButton == MouseButtonState.Pressed)
                 _isErasing = true;
-            
+
             _previousPoint = e.GetPosition(Canvas);
         }
 
@@ -167,6 +167,21 @@ namespace WPF
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
+            }
+        }
+
+        /// <summary>
+        ///  Loads the pre-trained model into the number recognizer.
+        /// </summary>
+        /// <param name="sender"> The "Load Trained Model" button. </param>
+        /// <param name="e"> Event data associated with the click. </param>
+        private void Handle_Load__Trained_Click(object sender, RoutedEventArgs e)
+        {
+            using (StreamReader reader = new StreamReader("../../../Data/Models/Trained_Model.txt"))
+            {
+                var content = reader.ReadToEnd();
+                var nr = JsonSerializer.Deserialize<SimpleNumberRecognizer>(content);
+                _nr = nr;
             }
         }
 
