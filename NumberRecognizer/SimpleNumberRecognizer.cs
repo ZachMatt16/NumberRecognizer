@@ -37,7 +37,7 @@ namespace NumberRecognizer
         private const double LearningLevel = .01;
 
         private readonly string _filename =
-            "Numbers\\CurrentNumber.png";
+            @"..\..\..\Data\Numbers\CurrentNumber.png";
 
         /// <summary>
         ///  Constructs a SimpleNumberRecognizer and initialize random weights and biases. 
@@ -115,11 +115,11 @@ namespace NumberRecognizer
         {
             using var imageReader =
                 new BinaryReader(File.OpenRead(
-                    @"MNIST Dataset/train-images.idx3-ubyte"));
+                    @"..\..\..\Data\MNIST Dataset\train-images.idx3-ubyte"));
 
             using var labelReader =
                 new BinaryReader(File.OpenRead(
-                    @"MNIST Dataset\train-labels.idx1-ubyte"));
+                    @"..\..\..\Data\MNIST Dataset\train-labels.idx1-ubyte"));
 
             // read magic number, number of images and num of rows and columns for image and label
             ReadBigInt32(imageReader); // magic number

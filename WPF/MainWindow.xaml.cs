@@ -122,7 +122,7 @@ namespace WPF
         {
             try
             {
-                File.WriteAllText($"Models/{Save_File_Name.Text}.txt", GetJsonStringRepresentation());
+                File.WriteAllText($"../../../Data/Models/{Save_File_Name.Text}.txt", GetJsonStringRepresentation());
             }
             catch (Exception ex)
             {
@@ -155,12 +155,18 @@ namespace WPF
             var path = string.Empty;
             if (openFileDialog.ShowDialog() == true)
                 path = openFileDialog.FileName;
-
-            using (StreamReader reader = new StreamReader(path))
+            try
             {
-                var content = reader.ReadToEnd();
-                var nr = JsonSerializer.Deserialize<SimpleNumberRecognizer>(content);
-                _nr = nr;
+                using (StreamReader reader = new StreamReader(path))
+                {
+                    var content = reader.ReadToEnd();
+                    var nr = JsonSerializer.Deserialize<SimpleNumberRecognizer>(content);
+                    _nr = nr;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
             }
         }
 
@@ -197,7 +203,7 @@ namespace WPF
             // Encode the RenderTargetBitmap to a PNG file
             var pngEncoder = new PngBitmapEncoder();
             pngEncoder.Frames.Add(BitmapFrame.Create(rtb28));
-            using (var fs = System.IO.File.OpenWrite("Numbers/CurrentNumber.png"))
+            using (var fs = System.IO.File.OpenWrite(@"..\..\..\Data\Numbers\CurrentNumber.png"))
             {
                 pngEncoder.Save(fs);
             }
